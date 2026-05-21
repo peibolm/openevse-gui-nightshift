@@ -63,7 +63,8 @@
   let claimOwner = $derived($claims_target_store?.claims?.state)
   let modeLocked = $derived(
     claimOwner === EvseClients.ocpp.id ||
-    claimOwner === EvseClients.limit.id,
+    claimOwner === EvseClients.limit.id ||
+    claimOwner === EvseClients.rfid.id,
   )
 
   let showEco = $derived(!!$config_store?.divert_enabled)
@@ -103,8 +104,12 @@
     if (busy) return
     busy = true
     try {
-      const current = override_store.get(override_store) ?? {}
-      await serialQueue.add(() => override_store.upload({ ...current, charge_current: val }))
+      if (val >= maxAmps) {
+        await serialQueue.add(() => override_store.removeProp('charge_current'))
+      } else {
+        const current = override_store.get(override_store) ?? {}
+        await serialQueue.add(() => override_store.upload({ ...current, charge_current: val }))
+      }
     } finally {
       busy = false
     }

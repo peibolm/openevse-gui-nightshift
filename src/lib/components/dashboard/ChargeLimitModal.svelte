@@ -14,6 +14,17 @@
   let socPct = $state(80)
   let rangeKm = $state(200)
 
+  $effect(() => {
+    if (open) {
+      type = 'energy'
+      energyKwh = 5
+      hours = 2
+      minutes = 0
+      socPct = 80
+      rangeKm = 200
+    }
+  })
+
   let typeOptions = $derived([
     { value: 'time', label: $_('dashboard.limit.type_time') },
     { value: 'energy', label: $_('dashboard.limit.type_energy') },
