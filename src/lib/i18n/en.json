@@ -1,0 +1,25 @@
+{
+  "app": "OpenEVSE",
+  "loading": "Loading…",
+  "nav": {
+    "home": "Home",
+    "schedule": "Schedule",
+    "monitoring": "Monitoring",
+    "history": "History"
+  },
+  "connection": {
+    "lost": "Connection lost",
+    "lost_body": "Trying to reconnect to the charger…",
+    "evse_missing": "EVSE not connected",
+    "evse_missing_body": "The WiFi module can't reach the EVSE controller.",
+    "error": "Charger error",
+    "reconnect": "Reload"
+  },
+  "screen": {
+    "dashboard": "Dashboard",
+    "schedule": "Schedule",
+    "monitoring": "Monitoring",
+    "history": "History",
+    "notfound": "Page not found"
+  }
+}
