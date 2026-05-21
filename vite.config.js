@@ -2,7 +2,7 @@ import { defineConfig, loadEnv } from 'vite'
 import { svelte } from '@sveltejs/vite-plugin-svelte'
 import tailwindcss from '@tailwindcss/vite'
 import { VitePWA } from 'vite-plugin-pwa'
-import viteCompression from 'vite-plugin-compression'
+import { compression } from 'vite-plugin-compression2'
 
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd())
@@ -32,7 +32,12 @@ export default defineConfig(({ mode }) => {
           ],
         },
       }),
-      viteCompression({ deleteOriginFile: true, algorithm: 'gzip', filter: /\.(js|mjs|json|css|html|svg)$/i }),
+      compression({
+        algorithm: 'gzip',
+        deleteOriginalAssets: true,
+        include: /\.(js|mjs|json|css|html|svg)$/i,
+        exclude: /sw\.js$/i,
+      }),
     ],
     build: {
       sourcemap: false,

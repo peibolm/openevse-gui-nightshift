@@ -1,6 +1,12 @@
 {
   "app": "OpenEVSE",
   "loading": "Loading…",
+  "notification": "Notification",
+  "config": {
+    "network": {
+      "con-ok": "Connected — new address: "
+    }
+  },
   "nav": {
     "home": "Home",
     "schedule": "Schedule",
