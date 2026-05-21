@@ -34,11 +34,15 @@ export function mockPlugin() {
   const baseStatus = JSON.parse(fixtures['/api/status'])
 
   function buildStatusMessage(tickCount) {
+    // Mirror the device's real status shape; nudge only genuine live fields
+    // so the connection looks alive without inventing nonexistent keys.
+    const charging = baseStatus.state === 3
     return JSON.stringify({
       ...baseStatus,
-      // Vary a couple of live fields so the UI looks animated
-      session_elapsed: baseStatus.session_elapsed + tickCount * 2,
-      wattpower: baseStatus.wattpower + Math.round(Math.sin(tickCount * 0.3) * 200),
+      uptime: (baseStatus.uptime ?? 0) + tickCount * 2,
+      session_elapsed: charging
+        ? (baseStatus.session_elapsed ?? 0) + tickCount * 2
+        : baseStatus.session_elapsed,
     })
   }
 
