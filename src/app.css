@@ -1,0 +1,56 @@
+@import "tailwindcss";
+
+/* Expose theme colors as Tailwind utilities (bg-surface, text-accent, ...).
+   Each maps to a CSS variable that the active theme sets below. */
+@theme {
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-surface-3: var(--surface-3);
+  --color-text: var(--text);
+  --color-text-dim: var(--text-dim);
+  --color-accent: var(--accent);
+  --color-border: var(--border);
+  --color-charging: var(--charging);
+  --color-error: var(--error);
+  --color-warning: var(--warning);
+}
+
+/* Light theme — also the fallback when no data-theme is set */
+:root,
+[data-theme="light"] {
+  --surface: #ffffff;
+  --surface-2: #eef4f3;
+  --surface-3: #dde7e6;
+  --text: #13202b;
+  --text-dim: #5b6b72;
+  --accent: #0f9b98;
+  --border: #e4eae9;
+  --charging: #0f9b98;
+  --error: #d6453d;
+  --warning: #d98a2b;
+  --accent-glow: 0 0 0 transparent;
+  color-scheme: light;
+}
+
+[data-theme="dark"] {
+  --surface: #0c0e13;
+  --surface-2: #10141c;
+  --surface-3: #161b26;
+  --text: #e8ecf2;
+  --text-dim: #6b7585;
+  --accent: #3cc6bd;
+  --border: #1c2230;
+  --charging: #3cc6bd;
+  --error: #f06e66;
+  --warning: #e7a948;
+  --accent-glow: 0 0 8px rgba(60, 198, 189, 0.55);
+  color-scheme: dark;
+}
+
+html, body, #app { height: 100%; }
+body {
+  margin: 0;
+  background: var(--surface);
+  color: var(--text);
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
