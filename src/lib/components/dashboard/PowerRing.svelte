@@ -12,11 +12,24 @@
     faultText = '',
   } = $props()
 
-  let color = $derived(display === 'error' ? 'var(--error)' : 'var(--accent)')
+  // Ring colour tracks the charge state: accent while charging/idle,
+  // amber when paused (connected but not charging), red on a fault.
+  let color = $derived(
+    display === 'error'
+      ? 'var(--error)'
+      : display === 'connected'
+        ? 'var(--warning)'
+        : 'var(--accent)',
+  )
+  // While charging the ring shows charge progress; in the paused and fault
+  // states it becomes a solid colour-coded indicator ring.
+  let ringFill = $derived(
+    display === 'charging' ? fill : display === 'connected' || display === 'error' ? 1 : 0,
+  )
 </script>
 
 <div class="flex justify-center py-1">
-  <ProgressRing {fill} {color}>
+  <ProgressRing fill={ringFill} {color}>
     {#if display === 'charging'}
       <div class="relative h-full w-full">
         <!-- kW value: centered both axes within the ring -->
