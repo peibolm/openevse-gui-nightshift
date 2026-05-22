@@ -314,6 +314,7 @@
       "update_desc": "Envoyez un fichier .bin ou .hex pour mettre à jour la passerelle WiFi.",
       "choose_file": "Choisir le fichier de micrologiciel",
       "install": "Installer le micrologiciel",
+      "ota_title": "Mise à jour du micrologiciel",
       "ota_started": "Mise à jour en cours…",
       "ota_completed": "Mise à jour terminée.",
       "ota_failed": "Échec de la mise à jour.",

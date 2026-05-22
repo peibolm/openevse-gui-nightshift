@@ -17,6 +17,7 @@
   import ReadOnlyRow from '../../lib/components/config/ReadOnlyRow.svelte'
   import Button from '../../lib/components/ui/Button.svelte'
   import ProgressBar from '../../lib/components/ui/ProgressBar.svelte'
+  import Modal from '../../lib/components/ui/Modal.svelte'
 
   let busy = $state(false)
   let confirmReset = $state(false)
@@ -182,18 +183,19 @@
     {/if}
   </ConfigSection>
 
-  {#if otaState}
-    <div class="mt-3">
-      <ProgressBar value={otaProgress} />
-      <p class="mt-1 text-xs text-text-dim">
-        {#if reloadCountdown > 0}
-          {$_('config.firmware.ota_reload')}
-        {:else}
-          {$_('config.firmware.ota_' + otaState)}
-        {/if}
-      </p>
-    </div>
-  {/if}
+  <Modal visible={!!otaState} closable={false}>
+    <h2 class="mb-4 text-base font-semibold text-text">
+      {$_('config.firmware.ota_title')}
+    </h2>
+    <ProgressBar value={otaProgress} />
+    <p class="mt-3 text-sm text-text-dim">
+      {#if reloadCountdown > 0}
+        {$_('config.firmware.ota_reload')} ({reloadCountdown}s)
+      {:else if otaState}
+        {$_('config.firmware.ota_' + otaState)}
+      {/if}
+    </p>
+  </Modal>
 
   <ConfigSection title={$_('config.firmware.update')}>
     <p class="mb-2 text-xs text-text-dim">{$_('config.firmware.update_desc')}</p>

@@ -314,6 +314,7 @@
       "update_desc": "Upload a .bin or .hex firmware file to update the WiFi gateway.",
       "choose_file": "Choose firmware file",
       "install": "Install firmware",
+      "ota_title": "Firmware update",
       "ota_started": "Update in progress…",
       "ota_completed": "Update complete.",
       "ota_failed": "Update failed.",

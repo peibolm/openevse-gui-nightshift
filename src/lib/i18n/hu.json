@@ -314,6 +314,7 @@
       "update_desc": "Töltse fel a .bin vagy .hex firmware fájlt a WiFi átjáró frissítéséhez.",
       "choose_file": "Firmware fájl kiválasztása",
       "install": "Firmware telepítése",
+      "ota_title": "Firmware-frissítés",
       "ota_started": "Frissítés folyamatban…",
       "ota_completed": "Frissítés kész.",
       "ota_failed": "Frissítés sikertelen.",
