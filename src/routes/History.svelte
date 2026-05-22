@@ -26,8 +26,8 @@
         stateDesc: getStateDesc(e.evseState) ?? '',
         typeIcon: logTypeIcon(e.type),
         typeTone: logTypeTone(e.type),
-        typeLabel: $_('history.types.' + e.type),
-        timeText: formatDate(e.time, $config_store?.time_zone, 'short'),
+        typeLabel: e.type ? $_('history.types.' + e.type, { default: e.type }) : '',
+        timeText: e.time ? formatDate(e.time, $config_store?.time_zone, 'short') : '',
         energyKwh: logEnergyKwh(e),
         tempC: logTempC(e),
       }

@@ -44,6 +44,26 @@ describe('History', () => {
     })
   })
 
+  it('shows the empty state when the log has no entries', async () => {
+    httpAPI.mockImplementation((method, path) =>
+      path === '/logs' ? Promise.resolve({ min: 1, max: 1 }) : Promise.resolve([]),
+    )
+    const { getByText } = render(History)
+    await vi.waitFor(() => {
+      expect(getByText('history.empty')).toBeInTheDocument()
+    })
+  })
+
+  it('shows the error card when a page download fails', async () => {
+    httpAPI.mockImplementation((method, path) =>
+      path === '/logs' ? Promise.resolve({ min: 1, max: 1 }) : Promise.resolve('error'),
+    )
+    const { getByText } = render(History)
+    await vi.waitFor(() => {
+      expect(getByText('history.error_title')).toBeInTheDocument()
+    })
+  })
+
   it('retries the load when Retry is clicked', async () => {
     httpAPI.mockResolvedValue('error')
     const { getByText } = render(History)
