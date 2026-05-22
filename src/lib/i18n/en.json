@@ -45,6 +45,34 @@
     "history": "History",
     "notfound": "Page not found"
   },
+  "days": {
+    "monday": "Monday",
+    "tuesday": "Tuesday",
+    "wednesday": "Wednesday",
+    "thursday": "Thursday",
+    "friday": "Friday",
+    "saturday": "Saturday",
+    "sunday": "Sunday"
+  },
+  "schedule": {
+    "count": "{n} / {max}",
+    "empty": "No timers yet",
+    "new": "New timer",
+    "new_title": "New timer",
+    "edit_title": "Edit timer",
+    "time": "Time",
+    "state": "State",
+    "active": "Active",
+    "disabled": "Disabled",
+    "select_all": "Select all",
+    "clear_all": "Clear all",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete timer",
+    "error_no_day": "Select at least one day",
+    "error_title": "Couldn't save",
+    "error_body": "The charger didn't accept the change. Please try again."
+  },
   "dashboard": {
     "status": {
       "starting": "Starting",
