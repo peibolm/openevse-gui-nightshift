@@ -25,6 +25,7 @@ dist-ssr
 
 # Project
 .env
+.vite
 coverage
 test-results
 dev-dist

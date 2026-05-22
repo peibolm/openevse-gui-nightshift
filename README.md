@@ -21,6 +21,24 @@ to be flashed onto the WiFi module and served from its embedded web server.
 - **Four languages** — English, Spanish, French, Hungarian; the locale follows the
   browser and can be changed in Settings → HTTP.
 
+## Screenshots
+
+Running against a real OpenEVSE charger. The UI ships light and dark themes —
+toggle from the header.
+
+<table>
+  <tr>
+    <td width="33%"><img src="docs/images/IMG_1092.PNG" alt="Dashboard during a charging session" width="260"><br><sub>Dashboard — live session</sub></td>
+    <td width="33%"><img src="docs/images/IMG_1085.JPG" alt="Dashboard in the light theme" width="260"><br><sub>Dashboard — light theme</sub></td>
+    <td width="33%"><img src="docs/images/IMG_1081.PNG" alt="Charger fault shown on the power ring" width="260"><br><sub>Charger fault state</sub></td>
+  </tr>
+  <tr>
+    <td width="33%"><img src="docs/images/IMG_1087.JPG" alt="Monitoring safety counters" width="260"><br><sub>Monitoring — safety</sub></td>
+    <td width="33%"><img src="docs/images/IMG_1073.JPG" alt="Event history list" width="260"><br><sub>Event history</sub></td>
+    <td width="33%"><img src="docs/images/IMG_1075.JPG" alt="Charger settings page" width="260"><br><sub>Settings — charger</sub></td>
+  </tr>
+</table>
+
 ## Requirements
 
 - Node.js 20+ and npm.
