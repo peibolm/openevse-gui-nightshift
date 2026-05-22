@@ -180,7 +180,11 @@
       "stuck": "Stuck relay",
       "switches": "Relay switch count"
     },
-    "manager": { "empty": "No active claims" }
+    "manager": {
+      "empty": "No active claims",
+      "active": "Active",
+      "disabled": "Disabled"
+    }
   },
   "units": {
     "kwh": "kWh",

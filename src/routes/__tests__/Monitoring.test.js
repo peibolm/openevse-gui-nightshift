@@ -44,4 +44,16 @@ describe('Monitoring', () => {
     const { getByText } = render(Monitoring)
     expect(getByText('monitoring.safety.gfci')).toBeInTheDocument()
   })
+
+  it('inserts the Vehicle group only when the device reports vehicle data', () => {
+    // default fixture (no battery data) — no Vehicle group
+    const plain = render(Monitoring)
+    expect(plain.queryByText('monitoring.group.vehicle')).not.toBeInTheDocument()
+    plain.unmount()
+
+    // with battery data — the Vehicle group appears
+    status_store.set({ total_energy: 7523, battery_level: 80, gfcicount: 0, nogndcount: 0, stuckcount: 0 })
+    const withVehicle = render(Monitoring)
+    expect(withVehicle.getByText('monitoring.group.vehicle')).toBeInTheDocument()
+  })
 })

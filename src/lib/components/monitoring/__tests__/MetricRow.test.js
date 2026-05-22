@@ -29,4 +29,10 @@ describe('MetricRow', () => {
     })
     expect(getByText('0')).toBeInTheDocument()
   })
+  it('passes a string value through unchanged', () => {
+    const { getByText } = render(MetricRow, {
+      props: { labelKey: 'monitoring.vehicle.updated', value: '01:01:01', unit: '' },
+    })
+    expect(getByText('01:01:01')).toBeInTheDocument()
+  })
 })

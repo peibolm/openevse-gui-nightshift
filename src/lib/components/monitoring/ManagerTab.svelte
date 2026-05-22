@@ -6,7 +6,7 @@
   let { rows = [] } = $props()
 
   function fmtValue(v) {
-    if (v === 'active' || v === 'disabled') return $_('schedule.' + v)
+    if (v === 'active' || v === 'disabled') return $_('monitoring.manager.' + v)
     if (v === null || v === undefined) return '—'
     return String(v)
   }
