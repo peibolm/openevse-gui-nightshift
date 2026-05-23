@@ -24,7 +24,4 @@
 <div class="flex items-center gap-2 py-1 text-[11px] font-semibold tracking-wide {color[display]}">
   <span class="h-[7px] w-[7px] rounded-full {dot[display]}"></span>
   <span>{$_(`dashboard.status.${display}`)}</span>
-  {#if display === 'charging'}
-    <span class="text-text-dim">· {$_('dashboard.car_connected')}</span>
-  {/if}
 </div>
