@@ -2,6 +2,7 @@
 <script>
   import { _, locales } from 'svelte-i18n'
   import { config_store } from '../../lib/stores/config.js'
+  import { uisettings_store } from '../../lib/stores/uisettings.js'
   import { LOCALE_NAMES } from '../../lib/i18n/locales.js'
   import { createConfigForm } from '../../lib/config/configForm.svelte.js'
   import ConfigPage from '../../lib/components/config/ConfigPage.svelte'
@@ -10,6 +11,7 @@
   import TextInput from '../../lib/components/ui/TextInput.svelte'
   import PasswordInput from '../../lib/components/ui/PasswordInput.svelte'
   import Select from '../../lib/components/ui/Select.svelte'
+  import SegmentedControl from '../../lib/components/ui/SegmentedControl.svelte'
   import Toggle from '../../lib/components/ui/Toggle.svelte'
 
   const form = createConfigForm()
@@ -31,6 +33,15 @@
   let langOptions = $derived(
     ($locales ?? ['en']).map((l) => ({ value: l, label: LOCALE_NAMES[l] ?? l })),
   )
+
+  let tempUnitOptions = $derived([
+    { value: 'c', label: $_('config.http.temp_celsius') },
+    { value: 'f', label: $_('config.http.temp_fahrenheit') },
+  ])
+
+  function setTempUnit(unit) {
+    uisettings_store.update((s) => ({ ...s, temp_unit: unit }))
+  }
 </script>
 
 <ConfigPage title={$_('config.pages.http')}>
@@ -64,6 +75,14 @@
         options={langOptions}
         value={$config_store?.lang ?? 'en'}
         onchange={(v) => form.saveField('lang', v)}
+      />
+    </FormField>
+    <!-- Local-only preference — not synced to the device. -->
+    <FormField label={$_('config.http.temp_unit')}>
+      <SegmentedControl
+        options={tempUnitOptions}
+        value={$uisettings_store?.temp_unit ?? 'c'}
+        onchange={setTempUnit}
       />
     </FormField>
   </ConfigSection>

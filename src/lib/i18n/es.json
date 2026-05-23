@@ -49,7 +49,10 @@
       "auth": "Contraseña de la interfaz web",
       "username": "Usuario",
       "password": "Contraseña",
-      "lang": "Idioma"
+      "lang": "Idioma",
+      "temp_unit": "Unidad de temperatura",
+      "temp_celsius": "Celsius",
+      "temp_fahrenheit": "Fahrenheit"
     },
     "mqtt": {
       "enable": "Activar MQTT",
@@ -280,11 +283,7 @@
       "repo_wifi": "Firmware WiFi en GitHub",
       "repo_evse": "Firmware EVSE en GitHub",
       "credit": "Desarrollado por OpenEVSE y OpenEnergyMonitor",
-      "theme_by": "Nightshift gui por Andrew Rankin",
-      "preferences": "Preferencias de visualización",
-      "temp_unit": "Unidad de temperatura",
-      "temp_celsius": "Celsius",
-      "temp_fahrenheit": "Fahrenheit"
+      "theme_by": "Nightshift gui por Andrew Rankin"
     },
     "certificates": {
       "installed": "Certificados instalados",
