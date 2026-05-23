@@ -24,7 +24,10 @@
       const proto = location.protocol === 'https:' ? 'wss://' : 'ws://'
       socket = new WebSocket(`${proto}${location.host}/${mode}/console`)
       socket.addEventListener('message', (e) => {
-        let next = text + String(e.data)
+        // Normalize line endings: the device may send \r\n or bare \r between
+        // log entries, neither of which renders as a break in <pre> alone.
+        const chunk = String(e.data).replace(/\r\n|\r/g, '\n')
+        let next = text + chunk
         if (next.length > MAX_CHARS) next = next.slice(-KEEP_CHARS)
         text = next
       })
