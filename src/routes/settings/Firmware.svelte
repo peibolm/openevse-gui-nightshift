@@ -199,12 +199,6 @@
       {:else}
         <p class="mb-1 text-sm text-text-dim">{$_('config.firmware.up_to_date')}</p>
       {/if}
-      {#if buildenv}
-        <p class="mb-2 text-xs text-text-dim">
-          {$_('config.firmware.buildenv_for')}
-          <code class="rounded bg-surface-3 px-1 py-0.5 font-mono text-text">{buildenv}</code>
-        </p>
-      {/if}
       {#each channels() as ch}
         <div class="flex items-start gap-3 py-2 text-sm">
           <div class="min-w-0 flex-1">
@@ -230,14 +224,20 @@
               />
             {:else}
               <!-- Channel exists but doesn't ship a build for this device's
-                   buildenv (common on Stable when running a pre-built dev). -->
-              <span class="inline-block text-xs text-text-dim">
-                {$_('config.firmware.no_build')}
-              </span>
+                   buildenv (common on Stable when running a pre-built dev).
+                   Same Button shape as the other rows to keep alignment. -->
+              <Button label={$_('config.firmware.no_build')} variant="ghost" disabled={true} />
             {/if}
           </div>
         </div>
       {/each}
+
+      {#if buildenv}
+        <p class="mt-3 text-xs text-text-dim">
+          {$_('config.firmware.buildenv_for')}
+          <code class="rounded bg-surface-3 px-1 py-0.5 font-mono text-text">{buildenv}</code>
+        </p>
+      {/if}
     {/if}
   </ConfigSection>
 
