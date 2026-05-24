@@ -208,6 +208,13 @@
     if (busy) return
     busy = true
     try {
+      // Defensively clear any existing /limit before we touch the override.
+      // A residual limit claim (priority 1100) silently holds state ownership
+      // even when /limit returns {}, which would mask our override and keep
+      // the device sleeping. The endpoint returns "done" even if nothing was
+      // set, so it's a safe no-op when there's nothing to clear.
+      await serialQueue.add(() => limit_store.remove())
+
       // Snapshot the current override so we can restore it. Empty object
       // means "Auto" (no override set).
       prevOverride = { ...($override_store || {}) }
