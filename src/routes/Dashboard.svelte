@@ -26,6 +26,7 @@
   import ChargeLimitModal from '../lib/components/dashboard/ChargeLimitModal.svelte'
   import EcoShaperToggles from '../lib/components/dashboard/EcoShaperToggles.svelte'
   import BoostButton from '../lib/components/dashboard/BoostButton.svelte'
+  import PullToRefresh from '../lib/components/ui/PullToRefresh.svelte'
 
   let limitModalOpen = $state(false)
   let busy = $state(false)
@@ -180,6 +181,16 @@
     if (!ok) showWriteError()
   }
 
+  // Pull-to-refresh: redownload the device stores that don't push via WS.
+  // status_store updates live over the WebSocket so we don't touch it.
+  async function refresh() {
+    await serialQueue.add(() => config_store.download())
+    await serialQueue.add(() => override_store.download())
+    await serialQueue.add(() => limit_store.download())
+    await serialQueue.add(() => claims_target_store.download())
+    await serialQueue.add(() => plan_store.download())
+  }
+
   // Boost: force-active override + auto-releasing time limit. When the
   // limit expires, the device drops the limit claim and stays in the
   // "active" override (so charging would resume) — v1 quirk; the user
@@ -209,6 +220,7 @@
   }
 </script>
 
+<PullToRefresh onrefresh={refresh}>
 <section class="px-4 pb-4">
   <StatusLine {display} />
 
@@ -263,6 +275,7 @@
     />
   {/if}
 </section>
+</PullToRefresh>
 
 <ChargeLimitModal
   open={limitModalOpen}
