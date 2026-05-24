@@ -191,14 +191,26 @@
     await serialQueue.add(() => plan_store.download())
   }
 
-  // Boost: force-active override + auto-releasing time limit. When the
-  // limit expires, the device drops the limit claim and stays in the
-  // "active" override (so charging would resume) — v1 quirk; the user
-  // can flip mode back manually. See BoostButton for the rationale.
+  // Boost: force-active override for the chosen duration, then restore the
+  // override the user had before. We *don't* touch the /limit endpoint —
+  // limits there only enforce stop conditions, and setting a time limit
+  // with no session running causes the limit claim (priority 1100) to
+  // immediately fire "expired", taking state ownership away from our
+  // override and dropping mode back to Auto / Sleeping.
+  //
+  // The countdown lives in a local setTimeout. If the page is refreshed
+  // mid-boost the timer is lost and the user is left in "On" until they
+  // flip mode manually — v1 tradeoff documented on the button.
+  let boostTimerId = null
+  let prevOverride = null
+
   async function boost(minutes) {
     if (busy) return
     busy = true
     try {
+      // Snapshot the current override so we can restore it. Empty object
+      // means "Auto" (no override set).
+      prevOverride = { ...($override_store || {}) }
       const ok = await serialQueue.add(() =>
         override_store.upload({ state: 'active', charge_current: $config_store?.max_current_soft }),
       )
@@ -206,14 +218,15 @@
         showWriteError()
         return
       }
-      const lim = await serialQueue.add(() =>
-        limit_store.upload({ type: 'time', value: minutes, auto_release: true }),
-      )
-      if (!lim) {
-        showWriteError()
-        return
-      }
-      await serialQueue.add(() => limit_store.download())
+      if (boostTimerId) clearTimeout(boostTimerId)
+      boostTimerId = setTimeout(async () => {
+        boostTimerId = null
+        if (!prevOverride || !prevOverride.state) {
+          await serialQueue.add(() => override_store.clear())
+        } else {
+          await serialQueue.add(() => override_store.upload(prevOverride))
+        }
+      }, minutes * 60 * 1000)
     } finally {
       busy = false
     }
@@ -270,7 +283,7 @@
     />
 
     <BoostButton
-      disabled={busy || ($limit_store?.type && $limit_store.type !== 'none')}
+      disabled={busy}
       onboost={boost}
     />
   {/if}
