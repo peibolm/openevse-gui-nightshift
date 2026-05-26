@@ -22,8 +22,16 @@ describe('Monitoring', () => {
     uistates_store.setObject('error', false)
   })
 
-  it('renders the Data tab by default with the energy group', () => {
+  it('renders the Energy tab by default', () => {
     const { getByText } = render(Monitoring)
+    // Tab label is in the tabs row; the Energy live view content lives below.
+    // We assert both the tab is selected and a known Energy-tab string renders.
+    expect(getByText('monitoring.energy.live')).toBeInTheDocument()
+  })
+
+  it('switches to the Data tab and shows the energy group', async () => {
+    const { getByText } = render(Monitoring)
+    await fireEvent.click(getByText('monitoring.tab.data'))
     expect(getByText('monitoring.group.energy')).toBeInTheDocument()
   })
 
@@ -45,15 +53,17 @@ describe('Monitoring', () => {
     expect(getByText('monitoring.safety.gfci')).toBeInTheDocument()
   })
 
-  it('inserts the Vehicle group only when the device reports vehicle data', () => {
-    // default fixture (no battery data) — no Vehicle group
+  it('inserts the Vehicle group only when the device reports vehicle data', async () => {
+    // default fixture (no battery data) — no Vehicle group on the Data tab
     const plain = render(Monitoring)
+    await fireEvent.click(plain.getByText('monitoring.tab.data'))
     expect(plain.queryByText('monitoring.group.vehicle')).not.toBeInTheDocument()
     plain.unmount()
 
     // with battery data — the Vehicle group appears
     status_store.set({ total_energy: 7523, battery_level: 80, gfcicount: 0, nogndcount: 0, stuckcount: 0 })
     const withVehicle = render(Monitoring)
+    await fireEvent.click(withVehicle.getByText('monitoring.tab.data'))
     expect(withVehicle.getByText('monitoring.group.vehicle')).toBeInTheDocument()
   })
 })

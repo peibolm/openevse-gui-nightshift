@@ -21,7 +21,7 @@
   let hasError = $derived(!!$uistates_store?.error)
 
   onMount(() => {
-    if ($uistates_store?.error) activeTab = 1
+    if ($uistates_store?.error) activeTab = 2
   })
 
   let groups = $derived([
@@ -36,10 +36,10 @@
   let claims = $derived(claimRows($claims_target_store))
 
   let tabs = $derived([
+    { label: $_('monitoring.tab.energy'), alert: false },
     { label: $_('monitoring.tab.data'), alert: false },
     { label: $_('monitoring.tab.safety'), alert: hasError },
     { label: $_('monitoring.tab.manager'), alert: false },
-    { label: $_('monitoring.tab.energy'), alert: false },
   ])
 </script>
 
@@ -50,13 +50,13 @@
 
   <div class="mt-3 flex min-h-0 flex-1 flex-col">
     {#if activeTab === 0}
-      <MetricsTab {groups} />
-    {:else if activeTab === 1}
-      <SafetyTab data={safety} />
-    {:else if activeTab === 2}
-      <ManagerTab rows={claims} />
-    {:else}
       <EnergyTab />
+    {:else if activeTab === 1}
+      <MetricsTab {groups} />
+    {:else if activeTab === 2}
+      <SafetyTab data={safety} />
+    {:else}
+      <ManagerTab rows={claims} />
     {/if}
   </div>
 </section>
