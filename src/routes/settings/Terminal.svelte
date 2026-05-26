@@ -46,14 +46,14 @@
 </script>
 
 <ConfigPage title={$_('config.pages.terminal')}>
-  <ConfigSection title={$_('config.terminal.feature_gates')}>
+  <ConfigSection title={$_('config.terminal.labs')}>
     <FormField
-      label={$_('config.terminal.energy_charts')}
-      description={$_('config.terminal.energy_charts_desc')}
+      label={$_('config.terminal.labs_enable')}
+      description={$_('config.terminal.labs_desc')}
     >
       <Toggle
         checked={!!$uisettings_store?.dev_features}
-        label={$_('config.terminal.energy_charts')}
+        label={$_('config.terminal.labs_enable')}
         onchange={setDevFeatures}
       />
     </FormField>

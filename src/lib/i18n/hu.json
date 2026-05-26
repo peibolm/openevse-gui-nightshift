@@ -313,9 +313,9 @@
       "cancel": "Mégse"
     },
     "terminal": {
-      "feature_gates": "Fejlesztői funkciók",
-      "energy_charts": "Energia diagramok",
-      "energy_charts_desc": "Megjeleníti az Energia fület a Monitorozás képernyőn. A fejlesztés alatt álló firmware energianaplózó végpontokat igényli — hagyd kikapcsolva, amíg a megfelelő firmware nincs feltöltve.",
+      "labs": "OpenEVSE Labs",
+      "labs_enable": "Labs funkciók engedélyezése",
+      "labs_desc": "Megjeleníti a fejlesztés alatt álló funkciókat, amelyek megfelelő firmware támogatást igényelnek. Hagyd kikapcsolva, amíg a megfelelő firmware nincs feltöltve.",
       "rapi": "RAPI parancskonsol",
       "command": "Parancs",
       "send": "Elküld",
