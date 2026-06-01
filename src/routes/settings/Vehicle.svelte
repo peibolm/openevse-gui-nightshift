@@ -243,7 +243,7 @@
       <pre class="mt-2 rounded-xl bg-surface-2 p-3 text-xs text-text-dim">POST http://&lt;charger-ip&gt;/status
 &#123; "battery_level": int, "battery_range": int, "time_to_full_charge": int &#125;</pre>
     </ConfigSection>
-  {:else if src === 4}
+  {:else if src === 4 && $config_store?.ha_supported}
     <ConfigSection title={$_('config.vehicle.src_homeassistant')}>
       <p class="text-sm text-text-dim">{$_('config.vehicle.ha_info')}</p>
       <FormField label={$_('config.vehicle.range_unit')} status={$ss.mqtt_vehicle_range_miles ?? 'idle'}>

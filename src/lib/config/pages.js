@@ -35,5 +35,5 @@ export function pagesBySection(config) {
     pages: SETTINGS_PAGES.filter(
       (p) => p.section === section && (!p.requires || (config && config[p.requires])),
     ),
-  }))
+  })).filter((g) => g.pages.length > 0)
 }
