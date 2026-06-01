@@ -96,9 +96,7 @@
       "title": "Home Assistant",
       "url": "Home Assistant URL",
       "connect": "Csatlakozás",
-      "disconnect": "Lecsatlakozás",
-      "connected": "Csatlakozva",
-      "disconnected": "Nincs csatlakozva"
+      "disconnect": "Lecsatlakozás"
     },
     "title": "Beállítások",
     "back": "Beállítások",

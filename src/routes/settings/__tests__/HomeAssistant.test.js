@@ -17,6 +17,7 @@ vi.mock('../../../lib/config/homeassistant.js', () => ({
 
 import { config_store } from '../../../lib/stores/config.js'
 import { uistates_store } from '../../../lib/stores/uistates.js'
+import { fetchHaStatus } from '../../../lib/config/homeassistant.js'
 import HomeAssistant from '../HomeAssistant.svelte'
 
 beforeEach(() => {
@@ -38,7 +39,7 @@ describe('HomeAssistant settings page', () => {
 
   it('renders a disconnected status when not connected', () => {
     const { getByText } = render(HomeAssistant)
-    expect(getByText('config.homeassistant.disconnected')).toBeInTheDocument()
+    expect(getByText('config.not_connected')).toBeInTheDocument()
   })
 
   it('Connect button is disabled when URL is empty', () => {
@@ -53,5 +54,12 @@ describe('HomeAssistant settings page', () => {
     const { getByText } = render(HomeAssistant)
     const btn = getByText('config.homeassistant.connect').closest('button')
     expect(btn).not.toBeDisabled()
+  })
+
+  it('renders Disconnect when connected', async () => {
+    vi.mocked(fetchHaStatus).mockResolvedValueOnce({ enabled: true, connected: true })
+    const { findByText, queryByText } = render(HomeAssistant)
+    expect(await findByText('config.homeassistant.disconnect')).toBeInTheDocument()
+    expect(queryByText('config.homeassistant.connect')).not.toBeInTheDocument()
   })
 })

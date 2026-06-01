@@ -28,8 +28,7 @@
   async function onConnect() {
     connecting = true
     await form.saveField('ha_url', url)
-    startHaAuth()
-    connecting = false
+    startHaAuth()  // navigates away; `connecting` stays true until the page unloads
   }
 
   async function onDisconnect() {
@@ -42,7 +41,7 @@
   <ConfigSection>
     <ReadOnlyRow
       label={$_('config.connected')}
-      value={connected ? $_('config.homeassistant.connected') : $_('config.homeassistant.disconnected')}
+      value={connected ? $_('config.connected') : $_('config.not_connected')}
       tone={connected ? 'ok' : 'error'}
     />
   </ConfigSection>

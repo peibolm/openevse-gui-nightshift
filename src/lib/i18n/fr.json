@@ -96,9 +96,7 @@
       "title": "Home Assistant",
       "url": "URL de Home Assistant",
       "connect": "Connecter",
-      "disconnect": "Déconnecter",
-      "connected": "Connecté",
-      "disconnected": "Non connecté"
+      "disconnect": "Déconnecter"
     },
     "title": "Paramètres",
     "back": "Paramètres",
