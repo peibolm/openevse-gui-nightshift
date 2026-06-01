@@ -116,7 +116,7 @@ describe('Vehicle page', () => {
   })
 
   it('offers the Home Assistant source only when ha is supported', () => {
-    config_store.set({ vehicle_data_src: 0, ha_supported: true })
+    config_store.set({ vehicle_data_src: 0, ha_url: 'http://homeassistant.local' })
     const { getByText } = render(Vehicle)
     expect(getByText('config.vehicle.src_homeassistant')).toBeInTheDocument()
   })
