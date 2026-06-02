@@ -514,7 +514,6 @@
       "type_none": "None",
       "type_time": "Time",
       "type_energy": "Energy",
-      "type_soc": "Battery %",
       "type_range": "Range",
       "hours": "Hours",
       "minutes": "Minutes",

@@ -514,7 +514,6 @@
       "type_none": "Egyik sem",
       "type_time": "Idő",
       "type_energy": "Energia",
-      "type_soc": "Akkumulátor %",
       "type_range": "Hatótávolság",
       "hours": "Óra",
       "minutes": "Perc",
