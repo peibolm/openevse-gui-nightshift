@@ -533,7 +533,7 @@
       "active": "Korlátozva · {amps} A"
     },
     "session": {
-      "collecting": "Munkamenet adatainak gyűjtése…",
+      "collecting": "Töltési adatok gyűjtése…",
       "soc_target": "SOC → {target}%"
     }
   },
