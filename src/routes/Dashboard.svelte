@@ -341,7 +341,7 @@
   <StatusLine {display} />
 
   <div class="relative">
-    <div class="absolute left-0 top-1 z-10">
+    <div class="absolute left-3 top-1 z-10">
       <ModePill
         {mode}
         locked={modeLocked}
@@ -350,7 +350,7 @@
         onmode={setMode}
       />
     </div>
-    <div class="absolute right-0 top-1 z-10">
+    <div class="absolute right-3 top-1 z-10">
       {#key rateNonce}
         <RatePill
           amps={chargeAmps}
