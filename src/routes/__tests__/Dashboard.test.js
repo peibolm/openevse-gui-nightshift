@@ -97,8 +97,8 @@ describe('Dashboard', () => {
 
   it('uploads a range limit when committed in range mode', async () => {
     status_store.set({ state: 3, power: 7000, voltage: 240, amp: 0, temp: 0, pilot: 0, total_day: 0, total_energy: 0, battery_level: 74, vehicle_charge_limit: 90, battery_range: 206, time_to_full_charge: 0 })
-    const { getByRole, getAllByLabelText } = render(Dashboard)
-    await fireEvent.click(getAllByLabelText('dashboard.vehicle.unit_aria')[1]) // range button
+    const { getByRole } = render(Dashboard)
+    await fireEvent.click(getByRole('button', { name: 'units.km' })) // range-unit toggle button
     const slider = getByRole('slider', { name: 'dashboard.vehicle.target_aria' })
     slider.value = '50' // 50% of estMaxRange(206/0.74≈278.4) ≈ 139 km
     await fireEvent.change(slider)

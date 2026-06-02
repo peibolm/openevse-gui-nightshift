@@ -494,7 +494,6 @@
     },
     "rate": { "claimed": "Establecido por {client}", "aria": "Velocidad de carga" },
     "vehicle": {
-      "label": "Vehículo",
       "charging_to": "a {value}",
       "to_full": "{time} para completar",
       "vehicle_limit": "límite del vehículo {value}",

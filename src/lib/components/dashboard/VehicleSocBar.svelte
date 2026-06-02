@@ -64,16 +64,20 @@
       })}{#if toFull} · {$_('dashboard.vehicle.to_full', { values: { time: toFull } })}{/if}
     </span>
     {#if showUnitToggle}
-      <div class="flex shrink-0 overflow-hidden rounded-full border border-border text-[10px] font-bold">
+      <div
+        role="group"
+        aria-label={$_('dashboard.vehicle.unit_aria')}
+        class="flex shrink-0 overflow-hidden rounded-full border border-border text-[10px] font-bold"
+      >
         <button
           type="button"
-          aria-label={$_('dashboard.vehicle.unit_aria')}
+          aria-pressed={unit === 'percent'}
           onclick={() => onunit('percent')}
           class="px-2 py-0.5 {unit === 'percent' ? 'bg-accent text-surface' : 'text-text-dim'}"
         >%</button>
         <button
           type="button"
-          aria-label={$_('dashboard.vehicle.unit_aria')}
+          aria-pressed={unit === 'range'}
           onclick={() => onunit('range')}
           class="px-2 py-0.5 {unit === 'range' ? 'bg-accent text-surface' : 'text-text-dim'}"
         >{rangeUnitLabel}</button>

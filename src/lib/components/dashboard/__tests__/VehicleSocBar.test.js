@@ -35,19 +35,19 @@ describe('VehicleSocBar', () => {
 
   it('shows the unit toggle only when estMaxRange is known', () => {
     const withRange = render(VehicleSocBar, { props: { ...base, estMaxRange: 278 } })
-    expect(withRange.getAllByLabelText('dashboard.vehicle.unit_aria')[0]).toBeInTheDocument()
+    expect(withRange.getByRole('group', { name: 'dashboard.vehicle.unit_aria' })).toBeInTheDocument()
     cleanup()
     const noRange = render(VehicleSocBar, { props: { ...base } })
-    expect(noRange.queryByLabelText('dashboard.vehicle.unit_aria')).not.toBeInTheDocument()
+    expect(noRange.queryByRole('group', { name: 'dashboard.vehicle.unit_aria' })).not.toBeInTheDocument()
   })
 
   it('emits onunit when a unit button is clicked', async () => {
     const onunit = vi.fn()
-    const { getAllByLabelText } = render(VehicleSocBar, {
+    const { getByRole } = render(VehicleSocBar, {
       props: { ...base, estMaxRange: 278, onunit },
     })
-    const buttons = getAllByLabelText('dashboard.vehicle.unit_aria')
-    await fireEvent.click(buttons[1])
+    // the range-unit button's accessible name is its visible text (units.km under the i18n mock)
+    await fireEvent.click(getByRole('button', { name: 'units.km' }))
     expect(onunit).toHaveBeenCalledWith('range')
   })
 
