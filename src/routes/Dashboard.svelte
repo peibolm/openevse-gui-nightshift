@@ -1,11 +1,13 @@
 <script>
   import { _ } from 'svelte-i18n'
+  import { fade } from 'svelte/transition'
   import { status_store } from '../lib/stores/status.js'
   import { config_store } from '../lib/stores/config.js'
   import { override_store } from '../lib/stores/override.js'
   import { limit_store } from '../lib/stores/limit.js'
   import { claims_target_store } from '../lib/stores/claims_target.js'
   import { plan_store } from '../lib/stores/plan.js'
+  import { energy_store } from '../lib/stores/energy.js'
   import { uistates_store } from '../lib/stores/uistates.js'
   import { uisettings_store } from '../lib/stores/uisettings.js'
   import { httpAPI } from '../lib/api/httpAPI.js'
@@ -20,6 +22,7 @@
 
   import StatusLine from '../lib/components/dashboard/StatusLine.svelte'
   import PowerRing from '../lib/components/dashboard/PowerRing.svelte'
+  import ChargingHero from '../lib/components/dashboard/ChargingHero.svelte'
   import StatChips from '../lib/components/dashboard/StatChips.svelte'
   import ThrottleBadge from '../lib/components/dashboard/ThrottleBadge.svelte'
   import ModePill from '../lib/components/dashboard/ModePill.svelte'
@@ -335,42 +338,83 @@
     boostEndsAt = null
     await restoreFromBoost()
   }
+
+  // While charging, refresh the raw energy log every 10 s so the session chart
+  // tracks live. The raw log isn't version-bumped like the pull stores, so we
+  // poll it ourselves. The effect re-runs when `charging` flips; its cleanup
+  // clears the interval, so polling starts/stops with the charging state.
+  $effect(() => {
+    if (!charging) return
+    energy_store.loadRaw()
+    const id = setInterval(() => energy_store.loadRaw(), 10000)
+    return () => clearInterval(id)
+  })
 </script>
 
 <section class="px-4 pb-4">
-  <StatusLine {display} />
+  {#if !charging}
+    <StatusLine {display} />
+  {/if}
 
   <div class="relative">
-    <div class="absolute left-3 top-1 z-10">
-      <ModePill
-        {mode}
-        locked={modeLocked}
-        lockLabel={modeLockLabel}
-        disabled={busy || display === 'error'}
-        onmode={setMode}
-      />
-    </div>
-    <div class="absolute right-3 top-1 z-10">
-      {#key rateNonce}
-        <RatePill
+    {#if charging}
+      <div in:fade={{ duration: 150 }}>
+        <ChargingHero
+          {kw}
+          soc={hasSoc ? ($status_store?.battery_level ?? null) : null}
+          target={socTarget}
+          {hasSoc}
+          {mode}
+          {modeLocked}
+          {modeLockLabel}
           amps={chargeAmps}
-          min={6}
-          max={maxAmps}
-          claimedBy={rateClaimedBy}
-          disabled={busy || ecoOn || display === 'error'}
-          onchange={setChargeAmps}
+          {maxAmps}
+          {rateClaimedBy}
+          {rateNonce}
+          samples={$energy_store.raw.samples}
+          voltage={$status_store?.voltage ?? 0}
+          sessionElapsed={$status_store?.session_elapsed ?? 0}
+          chartError={$energy_store.error.raw}
+          modeDisabled={busy || display === 'error'}
+          rateDisabled={busy || ecoOn || display === 'error'}
+          onmode={setMode}
+          onrate={setChargeAmps}
         />
-      {/key}
-    </div>
-    <PowerRing
-      {display}
-      {fill}
-      {kw}
-      maxKw={charging ? maxKw : ''}
-      reasonKey={reason.key}
-      reasonValues={reason.values}
-      faultText={getStateDesc($status_store?.state) ?? ''}
-    />
+      </div>
+    {:else}
+      <div in:fade={{ duration: 150 }}>
+        <div class="absolute left-3 top-1 z-10">
+          <ModePill
+            {mode}
+            locked={modeLocked}
+            lockLabel={modeLockLabel}
+            disabled={busy || display === 'error'}
+            onmode={setMode}
+          />
+        </div>
+        <div class="absolute right-3 top-1 z-10">
+          {#key rateNonce}
+            <RatePill
+              amps={chargeAmps}
+              min={6}
+              max={maxAmps}
+              claimedBy={rateClaimedBy}
+              disabled={busy || ecoOn || display === 'error'}
+              onchange={setChargeAmps}
+            />
+          {/key}
+        </div>
+        <PowerRing
+          {display}
+          {fill}
+          {kw}
+          maxKw={charging ? maxKw : ''}
+          reasonKey={reason.key}
+          reasonValues={reason.values}
+          faultText={getStateDesc($status_store?.state) ?? ''}
+        />
+      </div>
+    {/if}
   </div>
 
   <ThrottleBadge />
