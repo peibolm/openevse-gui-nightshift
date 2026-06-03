@@ -3,15 +3,21 @@
   import { config_store } from '../../stores/config.js'
   import UplotChart from './UplotChart.svelte'
   import { readChartTheme } from './chartTheme.js'
+  import { socOrNull } from '../../dashboard/sessionChart.js'
 
-  /** @type {{ samples: Array<{ts:number,a:number,t:number,e:number}> }} */
+  /** @type {{ samples: Array<{ts:number,a:number,t:number,e:number,s:number}> }} */
   let { samples = [] } = $props()
+
+  // Only draw the SOC axis/line when a vehicle source actually reported it,
+  // so devices without vehicle integration don't get an empty green axis.
+  let hasSoc = $derived(samples.some((s) => socOrNull(s) != null))
 
   let data = $derived.by(() => {
     const x = samples.map((s) => s.ts)
     const a = samples.map((s) => s.a)
     const t = samples.map((s) => (s.t > 0 ? s.t : null))
-    return [x, a, t]
+    const base = [x, a, t]
+    return hasSoc ? [...base, samples.map(socOrNull)] : base
   })
 
   let opts = $derived.by(() => {
@@ -29,16 +35,21 @@
         x: { time: true },
         a: { range: [0, ampMax] },
         t: { range: [-20, 80] },
+        ...(hasSoc ? { soc: { range: [0, 100] } } : {}),
       },
       axes: [
         { stroke: theme.axisText, grid: { stroke: theme.grid, width: 1 } },
         { scale: 'a', label: $_('monitoring.energy.axis.current'), stroke: theme.charging, grid: { stroke: theme.grid, width: 1 } },
         { side: 1, scale: 't', label: $_('monitoring.energy.axis.temperature'), stroke: theme.warning, grid: { show: false } },
+        ...(hasSoc
+          ? [{ side: 1, scale: 'soc', label: $_('monitoring.energy.axis.soc'), stroke: theme.success, grid: { show: false } }]
+          : []),
       ],
       series: [
         {},
         { label: 'A', scale: 'a', stroke: theme.charging, width: 2, fill: theme.charging + '22' },
         { label: '°C', scale: 't', stroke: theme.warning, width: 2 },
+        ...(hasSoc ? [{ label: 'SOC %', scale: 'soc', stroke: theme.success, width: 2 }] : []),
       ],
     }
   })
