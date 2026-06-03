@@ -50,15 +50,21 @@
     return `${Math.round(pct)}%`
   }
 
-  // "74% → 80%" (percent) or "206 → 223 km" (range): current → effective target.
+  // "74% → 80%" / "206 → 223 km" while charging toward the target; collapses to
+  // just the current value once SOC has reached/passed the effective target.
   function rangeAt(pct) {
     return Math.round((pct / 100) * estMaxRange)
   }
-  let progress = $derived(
-    rangeMode
-      ? `${range ?? rangeAt(soc)} → ${rangeAt(seg.zoneEndPct)} ${rangeUnitLabel}`
-      : `${Math.round(soc)}% → ${Math.round(seg.zoneEndPct)}%`,
-  )
+  let progress = $derived.by(() => {
+    if (rangeMode) {
+      const cur = range ?? rangeAt(soc)
+      const tgt = rangeAt(seg.zoneEndPct)
+      return cur >= tgt ? `${cur} ${rangeUnitLabel}` : `${cur} → ${tgt} ${rangeUnitLabel}`
+    }
+    const cur = Math.round(soc)
+    const tgt = Math.round(seg.zoneEndPct)
+    return cur >= tgt ? `${cur}%` : `${cur}% → ${tgt}%`
+  })
 
   let lineClass = $derived(above ? 'bg-error' : 'bg-text')
   let labelClass = $derived(above ? 'border-error text-error' : 'border-border text-text')

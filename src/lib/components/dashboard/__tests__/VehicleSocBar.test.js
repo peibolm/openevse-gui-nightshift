@@ -95,4 +95,12 @@ describe('VehicleSocBar', () => {
     // current uses the reported range (206); target ≈ 80% of estMaxRange
     expect(getByText(/^206 → \d+ units\.km$/)).toBeInTheDocument()
   })
+
+  it('collapses to a single value (no arrow) when SOC has reached the target', () => {
+    const { queryByText } = render(VehicleSocBar, {
+      props: { soc: 85, vehicleLimit: 90, target: 80, charging: false },
+    })
+    // soc (85) is at/above the effective target -> no "→" anywhere
+    expect(queryByText(/→/)).not.toBeInTheDocument()
+  })
 })
