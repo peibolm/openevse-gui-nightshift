@@ -12,6 +12,7 @@ describe('readChartTheme', () => {
     setVar('--warning',  '#d98a2b')
     setVar('--text-dim', '#5b6b72')
     setVar('--border',   '#e4eae9')
+    setVar('--success',  '#2ea052')
   })
 
   it('resolves the documented CSS vars', () => {
@@ -21,6 +22,7 @@ describe('readChartTheme', () => {
     expect(t.warning).toBe('#d98a2b')
     expect(t.axisText).toBe('#5b6b72')
     expect(t.grid).toBe('#e4eae9')
+    expect(t.success).toBe('#2ea052')
   })
 
   it('falls back to safe defaults when a var is missing', () => {

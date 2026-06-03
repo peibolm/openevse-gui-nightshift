@@ -564,7 +564,7 @@
       "loading": "Chargement…",
       "error": "Échec du chargement des données d'énergie",
       "no_samples": "Aucun échantillon enregistré",
-      "axis": { "current": "Courant (A)", "temperature": "Température (°C)" }
+      "axis": { "current": "Courant (A)", "temperature": "Température (°C)", "soc": "SOC (%)" }
     },
     "sensor": {
       "pilot": "Pilote",
