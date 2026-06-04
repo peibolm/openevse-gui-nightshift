@@ -545,6 +545,9 @@
       "active": "Impulso · {time}",
       "cancel_active": "Cancelar impulso"
     },
+    "controls": {
+      "locked_by": "Controlado por {owner}"
+    },
     "throttle": {
       "active": "Limitado · {amps} A"
     },

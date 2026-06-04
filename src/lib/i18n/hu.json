@@ -545,6 +545,9 @@
       "active": "Boost · {time}",
       "cancel_active": "Boost megszakítása"
     },
+    "controls": {
+      "locked_by": "Vezérli: {owner}"
+    },
     "throttle": {
       "active": "Korlátozva · {amps} A"
     },

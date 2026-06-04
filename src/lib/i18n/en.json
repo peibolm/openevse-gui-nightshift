@@ -545,6 +545,9 @@
       "active": "Boosting · {time}",
       "cancel_active": "Cancel boost"
     },
+    "controls": {
+      "locked_by": "Controlled by {owner}"
+    },
     "throttle": {
       "active": "Throttled · {amps} A"
     },
