@@ -1,5 +1,6 @@
 /** Pure helpers for the Monitoring screen. Self-contained — no store/DOM imports. */
 import { formatTemp } from '../temperature.js'
+import { isPlugged } from '../vehicle.js'
 
 /** HA vehicle charging-state strings → localized label keys. Unknown values pass through. */
 const CHARGING_STATE_KEYS = {
@@ -12,13 +13,6 @@ const CHARGING_STATE_KEYS = {
   disconnected: 'monitoring.vehicle.charging_idle',
 }
 
-/** Interpret an HA plugged-in value (bool, 0/1, or "on"/"off"/"true"/"false") as a boolean. */
-function isPlugged(v) {
-  if (typeof v === 'boolean') return v
-  if (typeof v === 'number') return v !== 0
-  if (typeof v === 'string') return ['true', 'on', '1', 'yes'].includes(v.trim().toLowerCase())
-  return false
-}
 
 /** Round `value` to `p` decimals; null for missing / non-numeric input. */
 export function round(value, p = 0) {
