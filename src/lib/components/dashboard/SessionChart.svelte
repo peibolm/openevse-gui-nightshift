@@ -17,7 +17,7 @@
   // height (more reliable than a percentage-height/flex chain, which doesn't
   // resolve through the dashboard's flex layout).
   let winH = $state(0)
-  let height = $derived(Math.round(Math.min(520, Math.max(150, winH * 0.42))))
+  let height = $derived(Math.round(Math.min(420, Math.max(130, winH * 0.33))))
 
   let clipped = $derived(clipToSession(samples, sessionElapsed))
   let data = $derived(toChartData(clipped, voltage)) // [x, soc, kw]

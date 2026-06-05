@@ -63,14 +63,14 @@ describe('toChartData', () => {
 })
 
 describe('kwAxisMax', () => {
-  it('floors at 8', () => {
-    expect(kwAxisMax([1, 2, 3])).toBe(8)
+  it('floors at 4', () => {
+    expect(kwAxisMax([1, 2, 3])).toBe(4)
   })
   it('uses peak + 1 headroom, ignoring nulls, rounded up', () => {
     expect(kwAxisMax([3, null, 9.2])).toBe(11)
   })
-  it('returns 8 when there are no finite values', () => {
-    expect(kwAxisMax([null, null])).toBe(8)
+  it('returns 4 when there are no finite values', () => {
+    expect(kwAxisMax([null, null])).toBe(4)
   })
 })
 

@@ -34,11 +34,11 @@ export function toChartData(samples, voltage) {
   return [x, soc, kw]
 }
 
-/** Right-axis ceiling for the kW line: peak + 1 headroom, floored at 8. */
+/** Right-axis ceiling for the kW line: peak + 1 headroom, floored at 4. */
 export function kwAxisMax(kwValues) {
   const finite = (kwValues || []).filter((v) => Number.isFinite(v))
   const peak = finite.length ? Math.max(...finite) : 0
-  return Math.max(8, Math.ceil(peak + 1))
+  return Math.max(4, Math.ceil(peak + 1))
 }
 
 /** Format x-axis tick (relative seconds) as "0", "25m", or "1h05". */
