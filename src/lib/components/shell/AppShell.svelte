@@ -25,10 +25,14 @@
 </script>
 
 <div class="flex h-full flex-col sm:flex-row-reverse">
-  <div class="flex min-h-0 flex-1 flex-col">
+  <div class="flex min-h-0 min-w-0 flex-1 flex-col">
     <Header {deviceName} {wsConnected} {evseConnected} />
     <ConnectionBanners {wsConnected} {evseConnected} {error} />
-    <main bind:this={mainEl} class="min-h-0 flex-1 overflow-y-auto">
+    <!-- overflow-x-hidden: nothing in the app scrolls horizontally, so clip any
+         stray wide child (charts measuring before layout, long tokens) instead
+         of letting `overflow-y-auto` promote overflow-x to a bottom scrollbar.
+         min-w-0 lets this column shrink in the sm+ sidebar (row) layout. -->
+    <main bind:this={mainEl} class="min-h-0 min-w-0 flex-1 overflow-x-hidden overflow-y-auto">
       <Router {routes} fallback={NotFound} />
     </main>
   </div>
