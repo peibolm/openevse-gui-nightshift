@@ -84,10 +84,10 @@ invisible `<input type=range>` overlay, knob + value pill):
 - `ChargeLimitModal.svelte` + its test + the Dashboard's `limitModalOpen` /
   modal render / modal-specific bits of `saveLimit`.
 - `VehicleSocBar`'s unit toggle block.
-- i18n: `dashboard.limit.{none,set,clear,type,type_none,hours,minutes,energy_value,save,or_limit_by}`
-  and `dashboard.vehicle.unit_aria` (all four locales).
+- i18n: `dashboard.limit.{none,set,clear,type,type_none,hours,energy_value,save,or_limit_by}`
+  and `dashboard.vehicle.unit_aria` (all four locales). (`minutes` is kept — the EVSE page's system-limit unit label consumes it)
 - i18n added: `dashboard.limit.{type_soc,type_range,drag_to_set,pills_aria}`
-  (`type_time`/`type_energy`/`label`/`left` are kept and reused). Parity
+  (`type_time`/`type_energy`/`label`/`left`/`minutes` are kept and reused). Parity
   maintained across en/es/fr/hu.
 
 ## Dashboard wiring (`Dashboard.svelte`)

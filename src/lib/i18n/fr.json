@@ -511,6 +511,7 @@
     "limit": {
       "label": "Limite de charge",
       "left": "restant",
+      "minutes": "Minutes",
       "type_soc": "SOC",
       "type_range": "Autonomie",
       "type_time": "Temps",

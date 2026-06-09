@@ -44,6 +44,7 @@ for (const l of ["en", "es", "fr", "hu"]) {
     `    "limit": {\n` +
     `      "label": ${JSON.stringify(d.label)},\n` +
     `      "left": ${JSON.stringify(d.left)},\n` +
+    `      "minutes": ${JSON.stringify(d.minutes)},\n` +
     `      "type_soc": ${JSON.stringify(e.limit_soc)},\n` +
     `      "type_range": ${JSON.stringify(e.limit_range)},\n` +
     `      "type_time": ${JSON.stringify(d.type_time)},\n` +
@@ -76,7 +77,7 @@ const d = o.dashboard.limit;
 console.log('$l', c(o), Object.keys(d).join(','), '| unit_aria?', 'unit_aria' in o.dashboard.vehicle)"; done
 ```
 
-Expected: identical counts across locales (baseline − 7 each: 10 removed + `unit_aria`, 4 added); key list exactly `label,left,type_soc,type_range,type_time,type_energy,drag_to_set,pills_aria`; `unit_aria? false`.
+Expected: identical counts across locales (baseline − 7 each: 10 removed + `unit_aria`, 4 added); key list exactly `label,left,minutes,type_soc,type_range,type_time,type_energy,drag_to_set,pills_aria`; `unit_aria? false`.
 
 `git diff src/lib/i18n/en.json` must show only the `dashboard.limit` block and the `unit_aria` line — nothing else.
 

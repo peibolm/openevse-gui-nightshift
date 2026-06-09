@@ -511,6 +511,7 @@
     "limit": {
       "label": "Töltési korlát",
       "left": "maradt",
+      "minutes": "Perc",
       "type_soc": "SOC",
       "type_range": "Hatótáv",
       "type_time": "Idő",
