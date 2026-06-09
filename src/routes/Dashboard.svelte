@@ -342,7 +342,12 @@
       // even when /limit returns {}, which would mask our override and keep
       // the device sleeping. The endpoint returns "done" even if nothing was
       // set, so it's a safe no-op when there's nothing to clear.
-      await serialQueue.add(() => limit_store.remove())
+      // Never DELETE a system (default) limit though — the firmware only
+      // re-applies it at boot or on a config write, so the delete would
+      // silently discard the configured limit. Boosting past a *tripped*
+      // system limit therefore won't resume charging (same accepted
+      // behavior as pressing On).
+      if (!systemLimit) await serialQueue.add(() => limit_store.remove())
 
       // Snapshot the current override so we can restore it. Empty object
       // means "Auto" (no override set).

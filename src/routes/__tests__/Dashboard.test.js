@@ -239,4 +239,23 @@ describe('Dashboard', () => {
     await new Promise((r) => setTimeout(r, 0))
     expect(httpAPI).not.toHaveBeenCalledWith('DELETE', '/limit')
   })
+
+  it('does not DELETE a system limit from the boost path', async () => {
+    // Normal idle state — same as other boost-path tests.
+    status_store.set({ state: 1, total_day: 0, total_energy: 0 })
+    // A system (default) limit: auto_release: false.
+    limit_store.set({ type: 'energy', value: 10000, auto_release: false })
+    const { getByText } = render(Dashboard)
+    // Open the boost preset modal then pick a duration — triggers boost(minutes).
+    // Use the 1-hour preset (unique key) to avoid multiple-element ambiguity with
+    // dashboard.boost.minutes (which appears twice for the 15 and 30 min presets).
+    await fireEvent.click(getByText('dashboard.boost.label'))
+    await fireEvent.click(getByText('dashboard.boost.hour'))
+    await vi.waitFor(() => {
+      expect(httpAPI).toHaveBeenCalled() // the override write happened
+    })
+    // Flush so a (buggy) defensive DELETE would have landed.
+    await new Promise((r) => setTimeout(r, 0))
+    expect(httpAPI).not.toHaveBeenCalledWith('DELETE', '/limit')
+  })
 })
