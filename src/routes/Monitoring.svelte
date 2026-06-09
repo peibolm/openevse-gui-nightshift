@@ -29,16 +29,26 @@
     else if (devOn) activeId = 'energy'
   })
 
+  // Desktop has room for everything at once, so the Data groups start
+  // expanded there (still individually collapsible). MetricGroup seeds its
+  // open state from `expanded` once on mount, so this only affects initial
+  // state — checked synchronously to be right on first paint.
+  const DESKTOP_MQ = '(min-width: 1024px)'
+  const desktop =
+    typeof window !== 'undefined' && typeof window.matchMedia === 'function'
+      ? window.matchMedia(DESKTOP_MQ).matches
+      : false
+
   let groups = $derived([
     { group: energyMetrics($status_store), expanded: true },
-    { group: sensorMetrics($status_store, $config_store, { tempUnit: $uisettings_store?.temp_unit }), expanded: false },
+    { group: sensorMetrics($status_store, $config_store, { tempUnit: $uisettings_store?.temp_unit }), expanded: desktop },
     ...(showVehicle($status_store, $config_store)
-      ? [{ group: vehicleMetrics($status_store, $config_store), expanded: false }]
+      ? [{ group: vehicleMetrics($status_store, $config_store), expanded: desktop }]
       : []),
     ...(showHomeBattery($status_store)
-      ? [{ group: homeBatteryMetrics($status_store), expanded: false }]
+      ? [{ group: homeBatteryMetrics($status_store), expanded: desktop }]
       : []),
-    { group: serviceMetrics($status_store, $config_store), expanded: false },
+    { group: serviceMetrics($status_store, $config_store), expanded: desktop },
   ])
   let safety = $derived(safetyData($status_store, hasError))
   let claims = $derived(claimRows($claims_target_store))

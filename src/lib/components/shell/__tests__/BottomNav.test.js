@@ -27,4 +27,12 @@ describe('BottomNav', () => {
       expect(link.className).toContain('lg:flex-row')
     }
   })
+
+  it('shows the desktop-only brand above the nav items', () => {
+    const { getByText } = render(BottomNav, { props: { path: '/', deviceName: 'Garage EVSE' } })
+    const brand = getByText('Garage EVSE').closest('div')
+    expect(brand.className).toContain('hidden')   // mobile: not shown
+    expect(brand.className).toContain('lg:flex')  // desktop rail: shown
+    expect(brand.className).toContain('border-b') // rule below the brand
+  })
 })

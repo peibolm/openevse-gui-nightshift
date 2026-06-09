@@ -26,4 +26,16 @@ describe('StatChips', () => {
     expect(getByText('3.2')).toBeInTheDocument()
     expect(getByText('7523')).toBeInTheDocument()
   })
+  it('renders the sensor trio as desktop pills and a mobile row', () => {
+    const { container } = render(StatChips, { props: { charging: true, live, summary } })
+    // mobile compact row keeps its rule but hides at lg
+    const row = container.querySelector('[class*="border-b"]')
+    expect(row.className).toContain('lg:hidden')
+    // desktop pill grid (hidden on mobile) carries the three sensor chips
+    const pills = container.querySelector('[class*="lg:grid-cols-3"]')
+    expect(pills).toBeTruthy()
+    expect(pills.className).toContain('hidden')
+    expect(pills.textContent).toContain('240 V')
+    expect(pills.textContent).toContain('32 A')
+  })
 })

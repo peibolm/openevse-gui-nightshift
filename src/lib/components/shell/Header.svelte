@@ -20,9 +20,11 @@
   class="flex items-center justify-between py-3
          pt-[max(env(safe-area-inset-top),0.75rem)]
          pl-[max(env(safe-area-inset-left),1rem)]
-         pr-[max(env(safe-area-inset-right),1rem)]"
+         pr-[max(env(safe-area-inset-right),1rem)]
+         lg:justify-end"
 >
-  <div class="flex items-center gap-2">
+  <!-- At lg the brand moves into the nav rail (BottomNav). -->
+  <div class="flex items-center gap-2 lg:hidden">
     <GearMark size={26} class="text-accent" />
     <span class="text-sm font-semibold text-text">{deviceName}</span>
   </div>

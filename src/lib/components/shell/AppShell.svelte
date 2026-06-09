@@ -36,5 +36,5 @@
       <Router {routes} fallback={NotFound} />
     </main>
   </div>
-  <BottomNav path={$currentPath} />
+  <BottomNav path={$currentPath} {deviceName} />
 </div>

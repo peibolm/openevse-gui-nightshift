@@ -17,10 +17,17 @@
       <StatChip value={live.elapsed} label={$_('dashboard.chips.elapsed')} />
       <StatChip value={`${live.currentA} A`} label={$_('dashboard.chips.current')} />
     </div>
-    <div class="flex justify-around border-b border-border pb-2 text-[9px] text-text-dim">
+    <!-- Sensor trio: compact underlined row on mobile; at lg it joins the
+         pill language of the chips above (and drops the rule). -->
+    <div class="flex justify-around border-b border-border pb-2 text-[9px] text-text-dim lg:hidden">
       <span>{$_('dashboard.chips.voltage')} <b class="text-text">{live.voltage} V</b></span>
       <span>{$_('dashboard.chips.temp')} <b class="text-text">{live.temp}{$_(live.tempUnit)}</b></span>
       <span>{$_('dashboard.chips.pilot')} <b class="text-text">{live.pilotA} A</b></span>
+    </div>
+    <div class="hidden lg:grid lg:grid-cols-3 lg:gap-2 lg:pb-2">
+      <StatChip value={`${live.voltage} V`} label={$_('dashboard.chips.voltage')} />
+      <StatChip value={`${live.temp}${$_(live.tempUnit)}`} label={$_('dashboard.chips.temp')} />
+      <StatChip value={`${live.pilotA} A`} label={$_('dashboard.chips.pilot')} />
     </div>
   {:else}
     <div class="flex justify-center gap-6 rounded-xl bg-surface-2 py-2 text-[10px] text-text-dim">
