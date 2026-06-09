@@ -20,4 +20,11 @@ describe('MetricsTab', () => {
     expect(getByText('monitoring.group.energy')).toBeInTheDocument()
     expect(getByText('monitoring.group.sensors')).toBeInTheDocument()
   })
+
+  it('flows groups into a two-column grid on desktop', () => {
+    const { container } = render(MetricsTab, { props: { groups } })
+    const cls = container.firstElementChild.className
+    expect(cls).toContain('lg:grid-cols-2')
+    expect(cls).toContain('lg:items-start')
+  })
 })

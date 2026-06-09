@@ -59,7 +59,7 @@
   let activeIndex = $derived(Math.max(0, tabs.findIndex((t) => t.id === activeId)))
 </script>
 
-<section class="flex h-full min-h-0 flex-col p-4">
+<section class="flex h-full min-h-0 flex-col p-4 lg:mx-auto lg:w-full lg:max-w-5xl">
   <h1 class="mb-3 text-lg font-semibold text-text">{$_('screen.monitoring')}</h1>
 
   <Tabs {tabs} active={activeIndex} onchange={(i) => (activeId = tabs[i].id)} />
@@ -70,9 +70,13 @@
     {:else if activeId === 'data'}
       <MetricsTab {groups} />
     {:else if activeId === 'safety'}
-      <SafetyTab data={safety} />
+      <div class="lg:mx-auto lg:w-full lg:max-w-3xl">
+        <SafetyTab data={safety} />
+      </div>
     {:else}
-      <ManagerTab rows={claims} />
+      <div class="lg:mx-auto lg:w-full lg:max-w-3xl">
+        <ManagerTab rows={claims} />
+      </div>
     {/if}
   </div>
 </section>
