@@ -214,6 +214,18 @@ describe('Dashboard', () => {
     expect(getByLabelText('dashboard.limit.clear')).toBeInTheDocument()
   })
 
+  it('does not DELETE a system limit when the bar commits at the ceiling', async () => {
+    status_store.set({ state: 3, power: 7000, voltage: 240, amp: 0, temp: 0, pilot: 0, total_day: 0, total_energy: 0, battery_level: 74, vehicle_charge_limit: 80, battery_range: 206, time_to_full_charge: 0 })
+    limit_store.set({ type: 'soc', value: 70, auto_release: false })
+    const { getByRole } = render(Dashboard)
+    const slider = getByRole('slider', { name: 'dashboard.vehicle.target_aria' })
+    slider.value = '80' // at the vehicle ceiling → would clear a user limit
+    await fireEvent.change(slider)
+    await new Promise((r) => setTimeout(r, 0))
+    expect(httpAPI).not.toHaveBeenCalledWith('DELETE', '/limit')
+    expect(httpAPI).not.toHaveBeenCalledWith('POST', '/limit', expect.anything())
+  })
+
   it('does not DELETE a system limit when forcing On past a trip', async () => {
     status_store.set({ state: 254, total_day: 0, total_energy: 0 })
     claims_target_store.set({ properties: {}, claims: { state: EvseClients.limit.id } })
@@ -223,6 +235,8 @@ describe('Dashboard', () => {
     await vi.waitFor(() => {
       expect(httpAPI).toHaveBeenCalled() // the override write happened
     })
+    // Flush the queued microtasks so a (buggy) follow-up DELETE would have landed.
+    await new Promise((r) => setTimeout(r, 0))
     expect(httpAPI).not.toHaveBeenCalledWith('DELETE', '/limit')
   })
 })

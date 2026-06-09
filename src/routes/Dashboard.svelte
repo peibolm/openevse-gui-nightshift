@@ -186,7 +186,9 @@
         ok = await serialQueue.add(() => override_store.upload(data))
         // Forcing On past a reached limit: the limit claim outranks manual, so
         // the override alone won't resume — clear the tripped limit too.
-        // A system limit can't be cleared (the firmware would reapply it).
+        // Never DELETE a system limit: the firmware only re-applies the
+        // config default at boot or on a config write, so deleting it here
+        // would silently discard the configured limit.
         if (ok && seg === 'on' && limitTripped && !systemLimit) {
           ok = await serialQueue.add(() => limit_store.remove())
         }
