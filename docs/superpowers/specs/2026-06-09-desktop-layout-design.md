@@ -39,7 +39,7 @@ Implementation is Tailwind `lg:` utilities only.
 
 At `lg:` the rail widens to `13rem` (`lg:w-52`) and each item becomes a
 horizontal icon + label row, left-aligned (`lg:flex-row lg:justify-start
-lg:gap-3 lg:px-4`, label text bumps from `text-[10px]` to `lg:text-sm`).
+lg:gap-3 lg:px-5`, label text bumps from `text-[10px]` to `lg:text-sm`).
 Active state remains `text-accent`; everything below `lg:` is untouched.
 
 ## Dashboard (`Dashboard.svelte`)
@@ -65,7 +65,8 @@ letting `lg:` place blocks into the two columns.
 
 - **Index (`Settings.svelte`):** at `lg:` the section centers at `max-w-4xl`
   and the section cards flow into a 2-column grid (`lg:grid lg:grid-cols-2
-  lg:gap-4 lg:items-start`). The Support card spans both columns at the
+  lg:gap-x-4 lg:items-start` — vertical rhythm comes from the cards' own
+  `mb-4`). The Support card spans both columns at the
   bottom (`lg:col-span-2`).
 - **Config pages (`ConfigPage.svelte`):** the shared wrapper constrains its
   content to a centered column at `lg:` (`lg:max-w-2xl lg:mx-auto`). This
@@ -75,8 +76,9 @@ letting `lg:` place blocks into the two columns.
 
 - The section centers at `max-w-5xl` at `lg:`.
 - **Data tab:** metric-group cards flow into a 2-column grid (`lg:grid
-  lg:grid-cols-2 lg:gap-3 lg:items-start` — `items-start` so an expanded
-  card doesn't stretch its collapsed neighbor).
+  lg:grid-cols-2 lg:gap-x-3 lg:items-start` — `items-start` so an expanded
+  card doesn't stretch its collapsed neighbor; vertical rhythm from the
+  cards' own `mb-2`).
 - **Safety / Manager tabs:** each is a single card of label/value rows (not a
   card list), so no grid — instead the card constrains to `lg:max-w-3xl
   lg:mx-auto lg:w-full` so rows don't stretch label-to-value across ~1000px.
