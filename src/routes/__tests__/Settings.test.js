@@ -45,4 +45,12 @@ describe('Settings hub', () => {
       expect(link).toHaveAttribute('rel', 'noopener noreferrer')
     }
   })
+
+  it('lays the section cards out as a two-column grid on desktop', () => {
+    const { container, getByText } = render(Settings)
+    expect(container.querySelector('section').className).toContain('lg:max-w-4xl')
+    expect(container.querySelector('[class*="lg:grid-cols-2"]')).toBeTruthy()
+    const supportCard = getByText('config.sections.support').closest('[class*="lg:col-span-2"]')
+    expect(supportCard).toBeTruthy()
+  })
 })
