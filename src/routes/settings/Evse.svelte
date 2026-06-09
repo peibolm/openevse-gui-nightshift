@@ -28,6 +28,40 @@
     { value: '1', label: $_('config.evse.service_l1') },
     { value: '2', label: $_('config.evse.service_l2') },
   ])
+
+  // System limit: the persistent default the firmware applies to every
+  // session (config limit_default_type / limit_default_value). The device
+  // stores energy in Wh; the field shows kWh. Unset type arrives as "".
+  let sysType = $derived($config_store?.limit_default_type || 'none')
+  let sysValue = $derived(Number($config_store?.limit_default_value ?? 0))
+  let limitTypeOptions = $derived([
+    { value: 'none', label: $_('config.evse.limit_none') },
+    { value: 'time', label: $_('config.evse.limit_time') },
+    { value: 'energy', label: $_('config.evse.limit_energy') },
+    { value: 'soc', label: $_('config.evse.limit_soc') },
+    { value: 'range', label: $_('config.evse.limit_range') },
+  ])
+  let sysUnitLabel = $derived(
+    sysType === 'time'
+      ? $_('dashboard.limit.minutes')
+      : sysType === 'energy'
+        ? $_('units.kwh')
+        : sysType === 'soc'
+          ? $_('units.percent')
+          : sysType === 'range'
+            ? ($config_store?.mqtt_vehicle_range_miles ? $_('units.miles') : $_('units.km'))
+            : '',
+  )
+
+  function saveSystemLimitType(t) {
+    // Value resets on type change — units differ per type (matches gui-v2).
+    if (t === 'none') return form.saveField('limit_default_type', 'none')
+    return form.saveFields({ limit_default_type: t, limit_default_value: 0 })
+  }
+  function saveSystemLimitValue(v) {
+    const raw = sysType === 'energy' ? Math.round((v ?? 0) * 1000) : (v ?? 0)
+    return form.saveField('limit_default_value', raw)
+  }
 </script>
 
 <ConfigPage title={$_('config.pages.evse')}>
@@ -122,6 +156,28 @@
           max={255}
           value={$config_store?.led_brightness ?? 0}
           onchange={(v) => form.saveField('led_brightness', v)}
+        />
+      </FormField>
+    {/if}
+  </ConfigSection>
+
+  <ConfigSection title={$_('config.evse.system_limit')}>
+    <FormField label={$_('config.evse.limit_type')} status={$ss.limit_default_type ?? 'idle'}>
+      <Select options={limitTypeOptions} value={sysType} onchange={saveSystemLimitType} />
+    </FormField>
+    {#if sysType !== 'none'}
+      <FormField
+        label={$_('config.evse.limit_value')}
+        description={sysUnitLabel}
+        status={$ss.limit_default_value ?? 'idle'}
+      >
+        <NumberInput
+          value={sysType === 'energy' ? sysValue / 1000 : sysValue}
+          min={0}
+          max={sysType === 'soc' ? 100 : undefined}
+          step={sysType === 'time' ? 5 : sysType === 'range' ? 10 : 1}
+          revert={form.revert}
+          onchange={saveSystemLimitValue}
         />
       </FormField>
     {/if}

@@ -96,9 +96,9 @@ describe('EVSE page', () => {
   it('saves the service level as a number', async () => {
     config_store.set({ ...BASE })
     const { getAllByRole } = render(Evse)
-    // service is the last <select> on the page
+    // service is the first <select> on the page; system-limit is the last
     const selects = getAllByRole('combobox')
-    await fireEvent.change(selects[selects.length - 1], { target: { value: '2' } })
+    await fireEvent.change(selects[0], { target: { value: '2' } })
     expect(httpAPI).toHaveBeenCalledWith('POST', '/config', JSON.stringify({ service: 2 }))
   })
 
@@ -110,5 +110,65 @@ describe('EVSE page', () => {
     await vi.waitFor(() => {
       expect(get(uistates_store).alertbox.visible).toBe(true)
     })
+  })
+
+  it('renders the system limit section', () => {
+    config_store.set({ ...BASE, limit_default_type: '', limit_default_value: 0 })
+    const { getByText } = render(Evse)
+    expect(getByText('config.evse.system_limit')).toBeInTheDocument()
+    expect(getByText('config.evse.limit_type')).toBeInTheDocument()
+  })
+
+  it('saves type with a zeroed value when picking a system limit type', async () => {
+    config_store.set({ ...BASE, limit_default_type: '', limit_default_value: 0 })
+    const { getAllByRole } = render(Evse)
+    const selects = getAllByRole('combobox')
+    const typeSelect = selects[selects.length - 1] // system-limit select is the page's last combobox
+    await fireEvent.change(typeSelect, { target: { value: 'energy' } })
+    expect(httpAPI).toHaveBeenCalledWith(
+      'POST', '/config',
+      JSON.stringify({ limit_default_type: 'energy', limit_default_value: 0 }),
+    )
+  })
+
+  it('shows the energy value in kWh and saves it in Wh', async () => {
+    config_store.set({ ...BASE, limit_default_type: 'energy', limit_default_value: 10000 })
+    const { getByDisplayValue } = render(Evse)
+    const input = getByDisplayValue('10') // 10000 Wh shown as 10 kWh
+    await fireEvent.input(input, { target: { value: '12' } })
+    await fireEvent.blur(input)
+    expect(httpAPI).toHaveBeenCalledWith(
+      'POST', '/config',
+      JSON.stringify({ limit_default_value: 12000 }),
+    )
+  })
+
+  it('saves a non-energy value unconverted', async () => {
+    config_store.set({ ...BASE, limit_default_type: 'time', limit_default_value: 120 })
+    const { getByDisplayValue } = render(Evse)
+    const input = getByDisplayValue('120')
+    await fireEvent.input(input, { target: { value: '90' } })
+    await fireEvent.blur(input)
+    expect(httpAPI).toHaveBeenCalledWith(
+      'POST', '/config',
+      JSON.stringify({ limit_default_value: 90 }),
+    )
+  })
+
+  it('removes the system limit by writing type none', async () => {
+    config_store.set({ ...BASE, limit_default_type: 'energy', limit_default_value: 10000 })
+    const { getAllByRole } = render(Evse)
+    const selects = getAllByRole('combobox')
+    await fireEvent.change(selects[selects.length - 1], { target: { value: 'none' } })
+    expect(httpAPI).toHaveBeenCalledWith(
+      'POST', '/config',
+      JSON.stringify({ limit_default_type: 'none' }),
+    )
+  })
+
+  it('hides the value field when no system limit type is set', () => {
+    config_store.set({ ...BASE, limit_default_type: '', limit_default_value: 0 })
+    const { queryByText } = render(Evse)
+    expect(queryByText('config.evse.limit_value')).not.toBeInTheDocument()
   })
 })
