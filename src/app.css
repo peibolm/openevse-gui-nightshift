@@ -5,6 +5,18 @@
    prefers-color-scheme / .dark defaults Tailwind ships with). */
 @custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
 
+/* Tailwind v4 preflight leaves buttons on cursor: default (native OS
+   behavior); almost everything clickable here is a <button>, so restore
+   the v3 pointer-on-hover affordance app-wide. */
+@layer base {
+  button:not(:disabled),
+  [role="button"]:not(:disabled),
+  select:not(:disabled),
+  input::file-selector-button {
+    cursor: pointer;
+  }
+}
+
 /* Expose theme colors as Tailwind utilities (bg-surface, text-accent, ...).
    Each maps to a CSS variable that the active theme sets below. */
 @theme {
@@ -58,13 +70,25 @@
   color-scheme: dark;
 }
 
-/* In iOS standalone PWA the chain html { height: 100% } → body / #app
-   measures the *layout* viewport (innerHeight), which on iPhones is the
-   physical screen minus the status-bar inset — verified on iOS 18.7 to
-   give 894 against a 956 px screen. The bottom-nav then ends 62 px short
-   of the screen edge. 100vh / 100lvh both report the full screen and
-   give us the right anchor; 100dvh was a red herring — same as 100%. */
-html, body, #app { height: 100vh; }
+/* Two viewport quirks pull in opposite directions here:
+
+   Browser tabs (Android Chrome especially): 100vh includes the area behind
+   the collapsible URL bar, so the page overflows by that height until the
+   bar hides — the bottom nav renders cropped and the whole page scrolls
+   even when content fits. 100dvh tracks the *visible* viewport and is the
+   right unit there.
+
+   iOS standalone PWA: 100dvh / 100% measure the layout viewport
+   (innerHeight), which on iPhones is the physical screen minus the
+   status-bar inset — verified on iOS 18.7 to give 894 against a 956 px
+   screen, leaving the bottom-nav 62 px short of the screen edge. 100vh /
+   100lvh report the full screen and give the right anchor, so standalone
+   keeps 100vh. (Android standalone has no browser chrome — vh == dvh —
+   so the override is harmless there.) */
+html, body, #app { height: 100dvh; }
+@media (display-mode: standalone) {
+  html, body, #app { height: 100vh; }
+}
 body {
   margin: 0;
   background: var(--surface);

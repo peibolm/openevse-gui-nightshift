@@ -33,8 +33,10 @@
   <div class="p-4">
     <h2 class="mb-3 text-base font-semibold text-text">{$_('config.certificates.add')}</h2>
 
-    <label class="mb-1 block text-sm text-text">{$_('config.certificates.type')}</label>
-    <Select options={typeOptions} value={type} onchange={(v) => (type = v)} />
+    <label class="mb-1 block text-sm text-text" for="cert-type">
+      {$_('config.certificates.type')}
+    </label>
+    <Select id="cert-type" options={typeOptions} value={type} onchange={(v) => (type = v)} />
 
     <label class="mb-1 mt-3 block text-sm text-text" for="cert-name">
       {$_('config.certificates.name')}

@@ -14,16 +14,19 @@
 </script>
 
 {#if visible}
+  <!-- The target check means only clicks on the backdrop itself close —
+       clicks inside the dialog hit a child, so the dialog needs no click
+       handler of its own. -->
   <div
     class="fixed inset-0 z-40 grid place-items-center bg-black/55 p-6"
-    onclick={() => closable && onclose()}
+    onclick={(e) => closable && e.target === e.currentTarget && onclose()}
     role="presentation"
   >
     <div
       class="w-full {widths[size]} rounded-2xl bg-surface-2 p-5 shadow-xl"
       role="dialog"
       aria-modal="true"
-      onclick={(e) => e.stopPropagation()}
+      tabindex="-1"
     >
       {@render children?.()}
     </div>

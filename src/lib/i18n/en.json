@@ -382,6 +382,7 @@
       "github_error": "No build for this device, or GitHub is unreachable.",
       "update_found": "An update is available.",
       "up_to_date": "You're on the latest stable release.",
+      "dev_build": "You're running a custom build — install any channel to return to a published release.",
       "channel_release": "Stable",
       "channel_release_desc": "Recommended for daily use.",
       "channel_prerelease": "Pre-Release",
@@ -616,6 +617,7 @@
     }
   },
   "units": {
+    "dbm": "dBm",
     "kwh": "kWh",
     "amp": "A",
     "volt": "V",

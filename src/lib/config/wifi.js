@@ -24,6 +24,15 @@ export function signalIcon(rssi) {
   return 'mdi:wifi-strength-1'
 }
 
+/**
+ * RSSI (dBm) as a 0-100 quality percentage. Linear over the usable WiFi
+ * range: -50 dBm or better = 100%, -100 dBm or worse = 0%.
+ */
+export function signalPercent(rssi) {
+  if (!Number.isFinite(rssi)) return null
+  return Math.max(0, Math.min(100, 2 * (rssi + 100)))
+}
+
 /** Whether a network needs a password. Unknown encryption → assume secured. */
 export function isSecured(network) {
   const e = network?.encryption

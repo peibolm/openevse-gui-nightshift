@@ -1,8 +1,9 @@
 <script>
-  let { options = [], value, disabled = false, onchange = () => {} } = $props()
+  let { options = [], value, disabled = false, id = undefined, onchange = () => {} } = $props()
 </script>
 
 <select
+  {id}
   {disabled}
   value={value}
   onchange={(e) => onchange(e.currentTarget.value)}

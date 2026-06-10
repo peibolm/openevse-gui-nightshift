@@ -1,6 +1,6 @@
 // src/lib/config/__tests__/wifi.test.js
 import { describe, it, expect } from 'vitest'
-import { normalizeNetworks, signalIcon, isSecured } from '../wifi.js'
+import { normalizeNetworks, signalIcon, signalPercent, isSecured } from '../wifi.js'
 
 describe('normalizeNetworks', () => {
   it('dedupes by SSID keeping the strongest signal, sorts by signal', () => {
@@ -26,6 +26,24 @@ describe('signalIcon', () => {
     expect(signalIcon(-70)).toBe('mdi:wifi-strength-2')
     expect(signalIcon(-90)).toBe('mdi:wifi-strength-1')
     expect(signalIcon(undefined)).toBe('mdi:wifi-strength-outline')
+  })
+})
+
+describe('signalPercent', () => {
+  it('maps the usable RSSI range linearly to 0-100', () => {
+    expect(signalPercent(-50)).toBe(100)
+    expect(signalPercent(-67)).toBe(66)
+    expect(signalPercent(-75)).toBe(50)
+    expect(signalPercent(-100)).toBe(0)
+  })
+  it('clamps values outside the range', () => {
+    expect(signalPercent(-30)).toBe(100)
+    expect(signalPercent(-110)).toBe(0)
+  })
+  it('returns null for non-numeric input', () => {
+    expect(signalPercent(undefined)).toBe(null)
+    expect(signalPercent(null)).toBe(null)
+    expect(signalPercent('strong')).toBe(null)
   })
 })
 

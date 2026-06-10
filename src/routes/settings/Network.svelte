@@ -13,7 +13,7 @@
   import { serialQueue } from '../../lib/queue.js'
   import { httpAPI } from '../../lib/api/httpAPI.js'
   import { showWriteError } from '../../lib/alerts.js'
-  import { normalizeNetworks, signalIcon, isSecured } from '../../lib/config/wifi.js'
+  import { normalizeNetworks, signalIcon, signalPercent, isSecured } from '../../lib/config/wifi.js'
   import Icon from '../../lib/icons/Icon.svelte'
   import Button from '../../lib/components/ui/Button.svelte'
 
@@ -22,6 +22,14 @@
 
   let connected = $derived(
     !!($status_store?.wifi_client_connected || $status_store?.eth_connected === 1),
+  )
+
+  // "72%" with "(-67 dBm)" as a dim suffix — falls back to the raw value if
+  // it isn't a finite number.
+  let signalPct = $derived(signalPercent($status_store?.srssi))
+  let signal = $derived(signalPct === null ? $status_store?.srssi : `${signalPct}%`)
+  let signalDetail = $derived(
+    signalPct === null ? '' : `(${$status_store?.srssi} ${$_('units.dbm')})`,
   )
 
   // ── WiFi scan / join ────────────────────────────────────────────────────
@@ -84,7 +92,7 @@
     />
     {#if $config_store?.ssid}
       <ReadOnlyRow label={$_('config.network.ssid')} value={$config_store.ssid} />
-      <ReadOnlyRow label={$_('config.network.signal')} value={$status_store?.srssi} />
+      <ReadOnlyRow label={$_('config.network.signal')} value={signal} detail={signalDetail} />
     {/if}
   </ConfigSection>
 

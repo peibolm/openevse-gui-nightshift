@@ -201,4 +201,33 @@ describe('Firmware page', () => {
     expect(getByText('config.firmware.installed_badge')).toBeInTheDocument()
     expect(queryByText('config.firmware.install_online')).toBeNull()
   })
+
+  it('a self-built firmware version gets an Install button, not the Installed badge', async () => {
+    global.fetch = vi.fn(() =>
+      Promise.resolve({
+        ok: true,
+        json: () =>
+          Promise.resolve([
+            { tag_name: 'v1.0.0', name: 'v1.0.0', prerelease: false, assets: [
+              { name: 'adafruit_featheresp32.bin', browser_download_url: 'u' },
+            ] },
+          ]),
+      }),
+    )
+    // compareVersion() can't parse a branch/hash version and reports "equal" —
+    // the page must not read that as "you're on the latest stable".
+    config_store.set({
+      firmware: '7.1.3',
+      version: 'local_feature/gui-nightshift-default_2bcdf1d0_modified',
+      buildenv: 'adafruit_featheresp32',
+    })
+    const { getByText, queryByText } = render(Firmware)
+    await vi.waitFor(() => {
+      expect(getByText('config.firmware.channel_release')).toBeInTheDocument()
+    })
+    expect(getByText('config.firmware.install_online')).toBeInTheDocument()
+    expect(queryByText('config.firmware.installed_badge')).toBeNull()
+    expect(queryByText('config.firmware.up_to_date')).toBeNull()
+    expect(getByText('config.firmware.dev_build')).toBeInTheDocument()
+  })
 })

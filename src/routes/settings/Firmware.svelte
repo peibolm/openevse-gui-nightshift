@@ -87,9 +87,15 @@
       }))
   })
 
+  // A self-built firmware reports a branch/hash ("local_feature/..._modified")
+  // rather than a release tag. compareVersion() treats anything without a
+  // leading v-number as "equal", which would falsely badge Stable as
+  // Installed — so version claims are gated on a parseable release version.
+  let installedIsRelease = $derived(/^v\d+\.\d+/.test(installed))
+
   /** True when this channel's published version matches what's installed. */
   function isInstalled(ch) {
-    return ch.key === 'release' && !!installed && !updateAvailable(ch.version, installed)
+    return ch.key === 'release' && installedIsRelease && !updateAvailable(ch.version, installed)
   }
 
   let hasUpdate = $derived(
@@ -212,8 +218,10 @@
     {:else}
       {#if hasUpdate}
         <p class="mb-1 text-sm text-accent">{$_('config.firmware.update_found')}</p>
-      {:else}
+      {:else if installedIsRelease}
         <p class="mb-1 text-sm text-success">{$_('config.firmware.up_to_date')}</p>
+      {:else}
+        <p class="mb-1 text-sm text-text-dim">{$_('config.firmware.dev_build')}</p>
       {/if}
       {#each channels() as ch}
         <div class="flex items-start gap-3 py-2 text-sm">
