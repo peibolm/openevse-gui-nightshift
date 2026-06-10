@@ -64,7 +64,7 @@ describe('ChargeLimitCard (pills)', () => {
     const onlimit = vi.fn()
     const { getByRole } = render(ChargeLimitCard, { props: { hasSoc: false, onlimit } })
     const slider = getByRole('slider', { name: 'dashboard.limit.type_time' })
-    slider.value = '120'
+    slider.value = '8' // tick 8 on the 15-min segment = 120 min
     await fireEvent.change(slider)
     expect(onlimit).toHaveBeenCalledWith({ type: 'time', value: 120 })
   })

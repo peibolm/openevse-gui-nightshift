@@ -14,22 +14,42 @@
     headerEnd = null,
   } = $props()
 
-  // Slider geometry is in display units: minutes for time, kWh for energy.
-  let max = $derived(kind === 'time' ? 480 : 100)
-  let step = $derived(kind === 'time' ? 15 : 1)
-  // A limit set elsewhere can exceed the scale (e.g. a 12h system default):
-  // clamp the knob render; the header still shows the true remaining.
+  // The slider operates in tick space — each notch is an equal drag distance,
+  // but the time stops coarsen as they grow (15-min steps to 4 h, 30-min to
+  // 8 h, then hourly to 24 h) so the common short limits keep fine control
+  // without making a 24 h track twitchy. Energy stays a 1:1 kWh scale.
+  const TIME_STOPS = []
+  for (let m = 0; m <= 240; m += 15) TIME_STOPS.push(m)
+  for (let m = 270; m <= 480; m += 30) TIME_STOPS.push(m)
+  for (let m = 540; m <= 1440; m += 60) TIME_STOPS.push(m)
+  const KWH_STOPS = Array.from({ length: 101 }, (_, i) => i)
+
+  let stops = $derived(kind === 'time' ? TIME_STOPS : KWH_STOPS)
+  let maxTick = $derived(stops.length - 1)
+  // A limit set elsewhere can exceed the scale: clamp the knob render; the
+  // header still shows the true remaining.
   let display = $derived(
-    kind === 'time' ? Math.min(value, 480) : Math.min(Math.round(value / 1000), 100),
+    kind === 'time'
+      ? Math.min(value, TIME_STOPS[TIME_STOPS.length - 1])
+      : Math.min(Math.round(value / 1000), 100),
   )
   let active = $derived(value > 0)
 
-  // Live knob position during a drag (display units) — same prop-mirroring
+  /** Display value -> fractional tick position (for the fill + off-stop limits). */
+  function fracTick(v) {
+    if (!(v > 0)) return 0
+    if (v >= stops[maxTick]) return maxTick
+    let i = 0
+    while (stops[i + 1] <= v) i++
+    return i + (v - stops[i]) / (stops[i + 1] - stops[i])
+  }
+
+  // Live knob position during a drag (tick index) — same prop-mirroring
   // pattern as VehicleSocBar.
   // svelte-ignore state_referenced_locally
-  let current = $state(display)
+  let current = $state(Math.round(fracTick(display)))
   $effect(() => {
-    current = display
+    current = Math.round(fracTick(display))
   })
 
   function fmt(v) {
@@ -41,7 +61,7 @@
     current = Number(e.currentTarget.value)
   }
   function handleChange(e) {
-    const v = Number(e.currentTarget.value)
+    const v = stops[Number(e.currentTarget.value)]
     // No-change commits never emit (an idle editor must not clear) — except a
     // 0-commit while a limit is genuinely active: a sub-step limit (e.g.
     // 400 Wh) displays as 0 but must still be clearable.
@@ -49,14 +69,14 @@
     onchange(kind === 'time' ? v : v * 1000)
   }
 
-  // Progress toward the limit (display-unit fraction of the bar, capped at
-  // the knob so the fill meets the pin exactly when the limit trips).
+  // Progress toward the limit (tick fraction of the bar, capped at the knob
+  // so the fill meets the pin exactly when the limit trips).
   let fillPct = $derived.by(() => {
     if (!active || display === 0) return 0
     const prog = kind === 'time' ? progress / 60 : progress / 1000
-    return (Math.min(display, prog) / max) * 100
+    return (Math.min(fracTick(prog), fracTick(display)) / maxTick) * 100
   })
-  let knobPct = $derived((current / max) * 100)
+  let knobPct = $derived((current / maxTick) * 100)
   let knobOpacity = $derived(current === 0 ? 0.55 : 1)
   let remaining = $derived.by(() => {
     if (!active) return ''
@@ -84,7 +104,7 @@
     {#if headerEnd}
       {@render headerEnd()}
     {:else}
-      <span class="shrink-0 text-[10px] text-text-dim">{fmt(max)}</span>
+      <span class="shrink-0 text-[10px] text-text-dim">{fmt(stops[maxTick])}</span>
     {/if}
   </div>
 
@@ -102,8 +122,8 @@
       <input
         type="range"
         min="0"
-        {max}
-        {step}
+        max={maxTick}
+        step="1"
         value={current}
         {disabled}
         aria-label={$_(kind === 'time' ? 'dashboard.limit.type_time' : 'dashboard.limit.type_energy')}
@@ -123,7 +143,7 @@
         class="absolute top-0 rounded-md border border-text bg-surface px-1.5 py-0.5 text-[11px] font-semibold whitespace-nowrap text-text"
         style="left: {knobPct}%; transform: translateX(-{pillShift}%)"
       >
-        {fmt(current)}
+        {fmt(stops[current])}
       </div>
     </div>
   </div>

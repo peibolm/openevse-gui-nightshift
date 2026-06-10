@@ -219,7 +219,7 @@ describe('Dashboard', () => {
     status_store.set({ state: 1, total_day: 0, total_energy: 0 })
     const { getByRole } = render(Dashboard)
     const slider = getByRole('slider', { name: 'dashboard.limit.type_time' })
-    slider.value = '120'
+    slider.value = '8' // tick 8 on the 15-min segment = 120 min
     await fireEvent.change(slider)
     await vi.waitFor(() => {
       expect(httpAPI).toHaveBeenCalledWith('POST', '/limit', JSON.stringify({ type: 'time', value: 120, auto_release: true }))
