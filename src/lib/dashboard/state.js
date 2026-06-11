@@ -54,6 +54,9 @@ export function ringFill(status, config, limit) {
  * state claim ('' when none) — it names who switched charging off.
  * Returns an i18n key + interpolation values.
  */
+// Plan events carry HH:MM:SS but schedules only resolve to the minute.
+const hhmm = (t) => (typeof t === 'string' ? t.slice(0, 5) : t)
+
 export function connectedReason(mode, plan, owner = '') {
   const cur = plan?.current_event
   const next = plan?.next_event
@@ -62,15 +65,15 @@ export function connectedReason(mode, plan, owner = '') {
     // went off and when it comes back, or just the next flip if the device
     // didn't report a current event.
     if (cur?.time) {
-      return { key: 'dashboard.reason.timer', values: { since: cur.time, at: next.time } }
+      return { key: 'dashboard.reason.timer', values: { since: hhmm(cur.time), at: hhmm(next.time) } }
     }
-    return { key: 'dashboard.reason.waiting', values: { time: next.time } }
+    return { key: 'dashboard.reason.waiting', values: { time: hhmm(next.time) } }
   }
   if (owner === 'divert') return { key: 'dashboard.reason.eco_waiting', values: {} }
   if (owner === 'ocpp') return { key: 'dashboard.reason.ocpp', values: {} }
   if (owner === 'rfid') return { key: 'dashboard.reason.rfid', values: {} }
   if (next && next.time) {
-    return { key: 'dashboard.reason.waiting', values: { time: next.time } }
+    return { key: 'dashboard.reason.waiting', values: { time: hhmm(next.time) } }
   }
   if (mode === 2) return { key: 'dashboard.reason.off', values: {} }
   return { key: 'dashboard.reason.not_charging', values: {} }

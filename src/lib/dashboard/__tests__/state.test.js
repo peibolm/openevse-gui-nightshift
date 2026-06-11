@@ -82,6 +82,17 @@ describe('connectedReason', () => {
     expect(r.key).toBe('dashboard.reason.timer')
     expect(r.values).toEqual({ since: '06:25', at: '22:50' })
   })
+  it('trims seconds off plan event times', () => {
+    // the device reports HH:MM:SS but schedules only resolve to the minute
+    const plan = {
+      current_event: { state: 'disabled', time: '14:00:00' },
+      next_event: { state: 'active', time: '08:00:00' },
+    }
+    const r = connectedReason(0, plan, 'timer')
+    expect(r.values).toEqual({ since: '14:00', at: '08:00' })
+    const w = connectedReason(0, { next_event: { time: '23:00:00' } })
+    expect(w.values.time).toBe('23:00')
+  })
   it('falls back to waiting when the timer claim has no current event', () => {
     const plan = { current_event: false, next_event: { state: 'active', time: '22:50' } }
     const r = connectedReason(0, plan, 'timer')
