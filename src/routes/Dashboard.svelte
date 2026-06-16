@@ -17,7 +17,7 @@
   import { formatTemp } from '../lib/temperature.js'
   import { formatCost } from '../lib/cost.js'
   import { showWriteError } from '../lib/alerts.js'
-  import { displayState, ringFill, connectedReason } from '../lib/dashboard/state.js'
+  import { displayState, ringFill, connectedReason, maxPowerW } from '../lib/dashboard/state.js'
   import { socCeiling, estMaxRange, hmsShort } from '../lib/dashboard/soc.js'
 
   import StatusLine from '../lib/components/dashboard/StatusLine.svelte'
@@ -66,7 +66,8 @@
 
   let kw = $derived((($status_store?.power ?? 0) / 1000).toFixed(1))
   // Shown on the PowerRing while charging (the non-Labs / chart-off path).
-  let maxKw = $derived((maxAmps * ($status_store?.voltage ?? 0) / 1000).toFixed(1))
+  // maxPowerW handles the 3-phase ×3 so this label matches the ring fill.
+  let maxKw = $derived((maxPowerW($status_store, $config_store) / 1000).toFixed(1))
 
   let tempDisplay = $derived(
     formatTemp(temp_round($status_store?.temp), $uisettings_store?.temp_unit),
