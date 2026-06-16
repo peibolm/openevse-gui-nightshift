@@ -38,12 +38,23 @@ export function limitProgress(limit, status) {
   return 0
 }
 
+/**
+ * Max charge power in watts: max_current × per-phase voltage, tripled on
+ * 3-phase. The firmware sums all phases into the reported `power`, so the max
+ * must triple too — otherwise the ring overflows and the "kW max" label reads a
+ * third of the real ceiling (~3.8 kW instead of ~11 kW). (gui-nightshift#16)
+ */
+export function maxPowerW(status, config) {
+  const phases = config?.is_threephase ? 3 : 1
+  return (config?.max_current_soft ?? 0) * (status?.voltage ?? 0) * phases
+}
+
 /** Ring fill (0..1): limit progress when a limit is active, else power vs max power. */
 export function ringFill(status, config, limit) {
   if (limit && limit.type && limit.type !== 'none' && limit.value) {
     return limitProgress(limit, status)
   }
-  const maxPower = (config?.max_current_soft ?? 0) * (status?.voltage ?? 0)
+  const maxPower = maxPowerW(status, config)
   if (maxPower <= 0) return 0
   return clamp01((status?.power ?? 0) / maxPower)
 }
