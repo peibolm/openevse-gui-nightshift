@@ -1,5 +1,5 @@
 // src/routes/settings/__tests__/Terminal.test.js
-import { describe, it, expect, vi, beforeEach } from 'vitest'
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { render, fireEvent } from '@testing-library/svelte'
 
 vi.mock('svelte-i18n', () => {
@@ -15,6 +15,10 @@ import Terminal from '../Terminal.svelte'
 beforeEach(() => {
   httpAPI.mockReset()
   httpAPI.mockResolvedValue({ cmd: '$GE', ret: '$OK 0 0^20' })
+})
+
+afterEach(() => {
+  vi.unstubAllEnvs()
 })
 
 describe('Terminal page', () => {
@@ -48,6 +52,29 @@ describe('Terminal page', () => {
     await fireEvent.input(input, { target: { value: '   ' } })
     await fireEvent.keyDown(input, { key: 'Enter' })
 
+    expect(httpAPI).not.toHaveBeenCalled()
+  })
+
+  it('on a RAPI device the input defaults to the "$" prefix', () => {
+    const { getByLabelText } = render(Terminal)
+    expect(getByLabelText('config.terminal.command').value).toBe('$')
+  })
+
+  it('on JuiceBox the console drops RAPI branding and the "$" default', () => {
+    vi.stubEnv('VITE_JUICEBOX', 'true')
+    const { getByLabelText, getByText, queryByText } = render(Terminal)
+    // Generic title, not the RAPI one.
+    expect(getByText('config.terminal.console')).toBeInTheDocument()
+    expect(queryByText('config.terminal.rapi')).not.toBeInTheDocument()
+    // Command box starts empty — no "$" prefix.
+    expect(getByLabelText('config.terminal.command').value).toBe('')
+  })
+
+  it('on JuiceBox an empty command (no "$" default) does not send', async () => {
+    vi.stubEnv('VITE_JUICEBOX', 'true')
+    const { getByLabelText, getByText } = render(Terminal)
+    await fireEvent.keyDown(getByLabelText('config.terminal.command'), { key: 'Enter' })
+    await fireEvent.click(getByText('config.terminal.send'))
     expect(httpAPI).not.toHaveBeenCalled()
   })
 

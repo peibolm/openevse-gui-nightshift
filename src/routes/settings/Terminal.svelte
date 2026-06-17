@@ -16,7 +16,15 @@
     uisettings_store.update((s) => ({ ...s, dev_features: !!on }))
   }
 
-  let command = $state('$')
+  // JuiceBox hardware has no OpenEVSE EVSE module and does not speak RAPI, so the
+  // command console drops the RAPI branding and the bare "$" RAPI prefix there.
+  // Read import.meta.env inline (like the chart lazy guards) so esbuild can
+  // constant-fold it and the standard build is unaffected. VITE_JUICEBOX=true is
+  // set by the build:juicebox script in package.json.
+  const isJuicebox = import.meta.env.VITE_JUICEBOX === 'true'
+  const cmdDefault = isJuicebox ? '' : '$'
+
+  let command = $state(cmdDefault)
   let results = $state([])
   let sending = $state(false)
   let consoleMode = $state(null) // 'debug' | 'evse' | null
@@ -29,16 +37,16 @@
   }
 
   async function send() {
-    // Treat a blank input or the bare "$" prefix (the reset default) as empty —
-    // sending it is meaningless and just logs an error entry.
+    // Treat a blank input or the bare reset default ("$" on RAPI devices) as
+    // empty — sending it is meaningless and just logs an error entry.
     const trimmed = command.trim()
-    if (sending || !trimmed || trimmed === '$') return
+    if (sending || !trimmed || trimmed === cmdDefault) return
     sending = true
     try {
       const res = await httpAPI('GET', '/r?json=1&rapi=' + command)
       if (res && res !== 'error') {
         results = [...results, { cmd: res.cmd ?? command, ret: res.ret ?? '', error: res.error }]
-        command = '$'
+        command = cmdDefault
       } else {
         results = [...results, { cmd: command, ret: '', error: 'error' }]
       }
@@ -49,7 +57,7 @@
 </script>
 
 <ConfigPage title={$_('config.pages.terminal')}>
-  <ConfigSection title={$_('config.terminal.rapi')}>
+  <ConfigSection title={isJuicebox ? $_('config.terminal.console') : $_('config.terminal.rapi')}>
     {#if results.length > 0}
       <div class="mb-3 max-h-60 overflow-y-auto rounded-xl bg-surface-3 p-3 font-mono text-xs">
         {#each results as r}

@@ -410,6 +410,7 @@
       "labs_enable": "Labs funkciók engedélyezése",
       "labs_desc": "Megjeleníti a fejlesztés alatt álló funkciókat, amelyek megfelelő firmware támogatást igényelnek. Hagyd kikapcsolva, amíg a megfelelő firmware nincs feltöltve.",
       "rapi": "RAPI parancskonsol",
+      "console": "Parancskonzol",
       "command": "Parancs",
       "send": "Elküld",
       "clear": "Törlés",

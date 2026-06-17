@@ -410,6 +410,7 @@
       "labs_enable": "Enable Labs features",
       "labs_desc": "Reveals in-development features that depend on matching firmware support. Leave off until the corresponding firmware is flashed.",
       "rapi": "RAPI command console",
+      "console": "Command console",
       "command": "Command",
       "send": "Send",
       "clear": "Clear",

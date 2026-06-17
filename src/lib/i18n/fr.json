@@ -410,6 +410,7 @@
       "labs_enable": "Activer les fonctions Labs",
       "labs_desc": "Révèle les fonctions en cours de développement qui dépendent du firmware correspondant. Laissez désactivé tant que ce firmware n'est pas flashé.",
       "rapi": "Console de commandes RAPI",
+      "console": "Console de commandes",
       "command": "Commande",
       "send": "Envoyer",
       "clear": "Effacer",
