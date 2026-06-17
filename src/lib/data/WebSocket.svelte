@@ -21,6 +21,17 @@
   let reconnectDelay = RECONNECT_MIN
   let reconnectTimer
 
+  // Probe give-up: a reduced-capability device (JuiceBox/lite) has no /ws, so
+  // without this it would retry the handshake forever. After MAX_PROBE_ATTEMPTS
+  // connects that have NEVER opened, conclude the device is poll-only, stop
+  // probing, and let the Poller carry the session. Once we've opened even once
+  // we know it speaks WS, so we keep reconnecting through transient drops
+  // regardless. A full page reload re-probes from scratch.
+  const MAX_PROBE_ATTEMPTS = 3
+  let everOpened = false
+  let failedConnects = 0
+  let wsUnsupported = false
+
   onMount(() => {
     connect2socket()
     if (typeof window !== 'undefined') {
@@ -51,6 +62,8 @@
       if (s !== socket) return
       $uistates_store.ws_connected = true
       live = true
+      everOpened = true
+      failedConnects = 0
       reconnectDelay = RECONNECT_MIN
       keepAlive(s)
     })
@@ -72,6 +85,12 @@
       cancelKeepAlive()
       $uistates_store.ws_connected = false
       live = false
+      failedConnects += 1
+      if (!everOpened && failedConnects >= MAX_PROBE_ATTEMPTS) {
+        // Device never spoke WebSocket — stop probing, the Poller drives.
+        wsUnsupported = true
+        return
+      }
       scheduleReconnect()
     })
   }
@@ -99,6 +118,7 @@
   // reconnect from scratch. The old socket's eventual close/error events
   // are ignored thanks to the `s !== socket` guards above.
   function teardownAndReconnect() {
+    if (wsUnsupported) return // poll-only device this session; don't restart WS churn
     cancelReconnect()
     cancelKeepAlive()
     reconnectDelay = RECONNECT_MIN
