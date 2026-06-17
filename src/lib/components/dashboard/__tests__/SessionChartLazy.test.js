@@ -11,10 +11,11 @@ vi.mock('svelte-i18n', () => {
 import SessionChartLazy from '../SessionChartLazy.svelte'
 
 describe('SessionChartLazy', () => {
-  it('mounts without throwing and resolves the chart when charts are enabled', async () => {
-    const { container } = render(SessionChartLazy, { props: { samples: [], voltage: 230, target: null, sessionElapsed: 0 } })
-    expect(container).toBeTruthy()
-    // The real chart loads asynchronously; the wrapper renders nothing until then.
-    await Promise.resolve()
+  it('resolves the dynamic import and renders the chart collecting placeholder', async () => {
+    const { getByText } = render(SessionChartLazy, { props: { samples: [], voltage: 230, target: null, sessionElapsed: 0 } })
+    // Wait for the dynamic import of SessionChart.svelte to fully settle
+    await vi.dynamicImportSettled()
+    // With samples:[] SessionChart shows its "collecting" placeholder
+    expect(getByText('dashboard.session.collecting')).toBeInTheDocument()
   })
 })
