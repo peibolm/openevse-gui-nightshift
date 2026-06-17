@@ -43,7 +43,9 @@
   })
 
   async function refreshNtpStatus() {
-    const res = await httpAPI('GET', '/time')
+    // The device web server is single-threaded — route through serialQueue so
+    // this poll can't collide with concurrent store downloads (see queue.js).
+    const res = await serialQueue.add(() => httpAPI('GET', '/time'))
     if (res && res !== 'error') {
       ntpData = res
       ntpFetchedAt = Date.now()
