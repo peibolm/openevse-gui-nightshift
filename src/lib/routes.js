@@ -71,10 +71,12 @@ export const LEGACY_ROUTES = {
   '/configuration': '/settings',
   '/configuration/selfproduction': '/settings/solar',
   '/configuration/dev': '/settings/terminal',
+  // Certificates was folded into the new Security page.
+  '/configuration/certificates': '/settings/security',
 }
 for (const page of [
   'safety', 'evse', 'mqtt', 'http', 'ocpp', 'network', 'firmware', 'time',
-  'shaper', 'vehicle', 'emoncms', 'ohmconnect', 'about', 'certificates',
+  'shaper', 'vehicle', 'emoncms', 'ohmconnect', 'about',
 ]) {
   LEGACY_ROUTES['/configuration/' + page] = '/settings/' + page
 }

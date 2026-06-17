@@ -31,7 +31,8 @@
     resetting = true
     resetDone = false
     try {
-      const res = await httpAPI('GET', '/r?json=1&rapi=$FC')
+      // Single-threaded device server — serialize like every other request.
+      const res = await serialQueue.add(() => httpAPI('GET', '/r?json=1&rapi=$FC'))
       if (res && res !== 'error' && !res.error) {
         resetDone = true
         await status_store.download()
