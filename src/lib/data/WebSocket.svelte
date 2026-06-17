@@ -5,6 +5,8 @@
   import { status_store } from '../stores/status.js'
   import { JSONTryParse } from '../utils.js'
 
+  let { live = $bindable(false) } = $props()
+
   let socket
   let timerId
   let lastmsg
@@ -47,6 +49,7 @@
     s.addEventListener('open', () => {
       if (s !== socket) return
       $uistates_store.ws_connected = true
+      live = true
       reconnectDelay = RECONNECT_MIN
       keepAlive(s)
     })
@@ -59,6 +62,7 @@
       if (s !== socket) return
       lastmsg = DateTime.now().toUnixInteger()
       $uistates_store.ws_connected = false
+      live = false
       cancelKeepAlive()
     })
     s.addEventListener('close', () => {
@@ -66,6 +70,7 @@
       lastmsg = DateTime.now().toUnixInteger()
       cancelKeepAlive()
       $uistates_store.ws_connected = false
+      live = false
       scheduleReconnect()
     })
   }
@@ -134,6 +139,7 @@
     } else if (ping_cnt > 3 && timing >= 5) {
       ping_cnt = 0
       $uistates_store.ws_connected = false
+      live = false
       s.close()
       lastmsg = DateTime.now().toUnixInteger()
       cancelKeepAlive()
