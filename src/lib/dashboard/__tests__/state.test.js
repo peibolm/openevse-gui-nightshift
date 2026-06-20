@@ -1,5 +1,24 @@
 import { describe, it, expect } from 'vitest'
-import { displayState, ringFill, limitProgress, connectedReason } from '../state.js'
+import { displayState, ringFill, limitProgress, connectedReason, maxPowerW, clampEnergyMax, ENERGY_LIMIT_MAX_KWH } from '../state.js'
+
+describe('clampEnergyMax', () => {
+  it('keeps a sensible value untouched', () => {
+    expect(clampEnergyMax(40)).toBe(40)
+    expect(clampEnergyMax(100)).toBe(100)
+  })
+  it('rounds to a whole kWh', () => {
+    expect(clampEnergyMax(42.6)).toBe(43)
+  })
+  it('floors at 1 kWh for zero / blank / negative input', () => {
+    expect(clampEnergyMax(0)).toBe(100) // 0 is "unset" → default
+    expect(clampEnergyMax(null)).toBe(100)
+    expect(clampEnergyMax(undefined)).toBe(100)
+    expect(clampEnergyMax(-5)).toBe(1)
+  })
+  it('caps pathological values at the hard ceiling (no giant stop array)', () => {
+    expect(clampEnergyMax(100000)).toBe(ENERGY_LIMIT_MAX_KWH)
+  })
+})
 
 describe('displayState', () => {
   it('returns starting when status is missing or state 0', () => {
@@ -30,6 +49,18 @@ describe('displayState', () => {
   })
 })
 
+describe('maxPowerW', () => {
+  it('is max_current × voltage on single-phase', () => {
+    expect(maxPowerW({ voltage: 240 }, { max_current_soft: 16 })).toBe(3840)
+  })
+  it('triples on three-phase', () => {
+    expect(maxPowerW({ voltage: 240 }, { max_current_soft: 16, is_threephase: true })).toBe(11520)
+  })
+  it('is 0 when inputs are missing', () => {
+    expect(maxPowerW(null, null)).toBe(0)
+  })
+})
+
 describe('ringFill', () => {
   it('is power over max power when charging with no limit', () => {
     // 7000 W / (40 A * 240 V = 9600 W) = 0.729
@@ -41,6 +72,13 @@ describe('ringFill', () => {
   })
   it('returns 0 when max power is unusable', () => {
     expect(ringFill({ power: 7000, voltage: 0 }, { max_current_soft: 0 }, null)).toBe(0)
+  })
+  it('triples max power on three-phase to match the firmware-tripled power', () => {
+    // Firmware reports power tripled on 3-phase, so max power must triple too.
+    // 4800 W / (16 A * 240 V * 3 = 11520 W) = 0.417 — not an overflow.
+    expect(
+      ringFill({ power: 4800, voltage: 240 }, { max_current_soft: 16, is_threephase: true }, null),
+    ).toBeCloseTo(0.417, 2)
   })
   it('uses limit progress when a limit is active', () => {
     const limit = { type: 'energy', value: 10000 }
@@ -82,6 +120,16 @@ describe('connectedReason', () => {
     expect(r.key).toBe('dashboard.reason.timer')
     expect(r.values).toEqual({ since: '06:25' })
     expect(r.detail).toEqual({ key: 'dashboard.reason.timer_on', values: { at: '22:50' } })
+  })
+  it('names an eco resume when the next timer event is eco', () => {
+    const plan = {
+      current_event: { state: 'disabled', time: '06:25' },
+      next_event: { state: 'eco', time: '10:00' },
+    }
+    const r = connectedReason(0, plan, 'timer')
+    expect(r.key).toBe('dashboard.reason.timer')
+    expect(r.values).toEqual({ since: '06:25' })
+    expect(r.detail).toEqual({ key: 'dashboard.reason.timer_eco', values: { at: '10:00' } })
   })
   it('trims seconds off plan event times', () => {
     // the device reports HH:MM:SS but schedules only resolve to the minute

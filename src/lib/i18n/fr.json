@@ -40,6 +40,8 @@
       "scan": "Rechercher des réseaux",
       "scanning": "Recherche en cours…",
       "scan_error": "Impossible de rechercher des réseaux.",
+      "manual": "Saisir le réseau manuellement",
+      "cancel_manual": "Annuler la saisie manuelle",
       "wifi_password": "Mot de passe WiFi",
       "connect": "Connecter",
       "connecting_btn": "Connexion…",
@@ -156,6 +158,8 @@
       "limit_energy": "Énergie",
       "limit_soc": "SOC",
       "limit_range": "Autonomie",
+      "energy_slider_max": "Maximum du curseur d'énergie (kWh)",
+      "energy_slider_max_desc": "Limite supérieure du curseur de limite d'énergie du tableau de bord. Abaissez-la pour un réglage plus fin sur les petites batteries ; augmentez-la pour les packs de plus de 100 kWh. Enregistré uniquement sur cet appareil.",
       "sensor": "Calibration du capteur",
       "scale": "Échelle capteur de courant",
       "offset": "Décalage capteur de courant"
@@ -511,6 +515,7 @@
     "state": "État",
     "active": "Actif",
     "disabled": "Désactivé",
+    "eco": "Éco",
     "select_all": "Tout sélectionner",
     "clear_all": "Tout effacer",
     "save": "Sauvegarder",
@@ -555,6 +560,7 @@
       "limit_reached": "Limite de charge atteinte · {value}",
       "timer": "Minuterie · arrêt depuis {since}",
       "timer_on": "marche à {at}",
+      "timer_eco": "éco à {at}",
       "eco_waiting": "Éco · en attente de surplus",
       "ocpp": "Contrôlé par OCPP",
       "rfid": "En attente du badge RFID"

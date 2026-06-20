@@ -1,6 +1,24 @@
 /** Pure helpers for the Dashboard. No store or DOM access — fully unit-tested. */
 
 /**
+ * Hard ceiling for the user-configurable energy-limit slider max, in kWh.
+ * The slider builds one stop per kWh, so an unbounded value (it comes from
+ * localStorage) could create a huge array and a slow O(n) tick scan. The
+ * largest EV packs today are ~200 kWh, so 500 is generous headroom while
+ * keeping the slider snappy.
+ */
+export const ENERGY_LIMIT_MAX_KWH = 500
+
+/**
+ * Clamp a user-entered energy-slider max to a whole kWh in
+ * [1, ENERGY_LIMIT_MAX_KWH]. A 0 / blank / nullish value is treated as
+ * "unset" and falls back to the 100 kWh default.
+ */
+export function clampEnergyMax(kwh) {
+  return Math.min(ENERGY_LIMIT_MAX_KWH, Math.max(1, Math.round(kwh || 100)))
+}
+
+/**
  * Map the raw OpenEVSE `state` code to a Dashboard display state.
  *
  * `mode` is the dashboard's derived mode (0 = Auto, 1 = On, 2 = Off).
@@ -38,12 +56,23 @@ export function limitProgress(limit, status) {
   return 0
 }
 
+/**
+ * Max charge power in watts: max_current × per-phase voltage, tripled on
+ * 3-phase. The firmware sums all phases into the reported `power`, so the max
+ * must triple too — otherwise the ring overflows and the "kW max" label reads a
+ * third of the real ceiling (~3.8 kW instead of ~11 kW). (gui-nightshift#16)
+ */
+export function maxPowerW(status, config) {
+  const phases = config?.is_threephase ? 3 : 1
+  return (config?.max_current_soft ?? 0) * (status?.voltage ?? 0) * phases
+}
+
 /** Ring fill (0..1): limit progress when a limit is active, else power vs max power. */
 export function ringFill(status, config, limit) {
   if (limit && limit.type && limit.type !== 'none' && limit.value) {
     return limitProgress(limit, status)
   }
-  const maxPower = (config?.max_current_soft ?? 0) * (status?.voltage ?? 0)
+  const maxPower = maxPowerW(status, config)
   if (maxPower <= 0) return 0
   return clamp01((status?.power ?? 0) / maxPower)
 }
@@ -60,17 +89,19 @@ const hhmm = (t) => (typeof t === 'string' ? t.slice(0, 5) : t)
 export function connectedReason(mode, plan, owner = '') {
   const cur = plan?.current_event
   const next = plan?.next_event
-  if (owner === 'timer' && next?.time && next.state === 'active') {
+  if (owner === 'timer' && next?.time && (next.state === 'active' || next.state === 'eco')) {
     // The scheduler switched charging off. Spell out the window: when it
     // went off and when it comes back, or just the next flip if the device
-    // didn't report a current event.
+    // didn't report a current event. An eco event resumes into solar divert
+    // rather than a fixed timer charge, so name the resume accordingly.
     if (cur?.time) {
       // Two lines: dim context ("Timer · off since …") over an emphasized
-      // resume time — the actionable fact when you're standing at the charger.
+      // resume time, the actionable fact when you're standing at the charger.
+      const resumeKey = next.state === 'eco' ? 'dashboard.reason.timer_eco' : 'dashboard.reason.timer_on'
       return {
         key: 'dashboard.reason.timer',
         values: { since: hhmm(cur.time) },
-        detail: { key: 'dashboard.reason.timer_on', values: { at: hhmm(next.time) } },
+        detail: { key: resumeKey, values: { at: hhmm(next.time) } },
       }
     }
     return { key: 'dashboard.reason.waiting', values: { time: hhmm(next.time) } }

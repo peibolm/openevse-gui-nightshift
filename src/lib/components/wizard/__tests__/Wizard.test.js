@@ -16,14 +16,18 @@ vi.mock('../../../queue.js', () => ({
 // Each step pulls in real stores / form helpers / http — stub them so the
 // route renders without an exploded dependency graph. vi.mock is hoisted,
 // so the spy has to live inside vi.hoisted to be reachable from the factory.
-const { saveParam } = vi.hoisted(() => ({
+const { saveParam, upload } = vi.hoisted(() => ({
   saveParam: vi.fn(() => Promise.resolve(true)),
+  upload: vi.fn(() => Promise.resolve(true)),
 }))
 vi.mock('../../../stores/config.js', async () => {
   const { writable } = await import('svelte/store')
   const config_store = writable({ wizard_passed: false, hostname: 'openevse' })
-  return { config_store: Object.assign(config_store, { saveParam }) }
+  return { config_store: Object.assign(config_store, { saveParam, upload }) }
 })
+vi.mock('../../../api/httpAPI.js', () => ({
+  httpAPI: vi.fn(() => Promise.resolve([])),
+}))
 
 import { writable } from 'svelte/store'
 import { status_store } from '../../../stores/status.js'
@@ -32,6 +36,7 @@ import Wizard from '../../../../routes/Wizard.svelte'
 
 beforeEach(() => {
   saveParam.mockClear()
+  upload.mockClear()
   status_store.set({ ipaddress: '10.0.0.5' })
 })
 
@@ -52,6 +57,45 @@ describe('Wizard route', () => {
     await fireEvent.click(getByText('wizard.previous'))
     expect(getByText('wizard.welcome.title')).toBeInTheDocument()
     expect(queryByText('wizard.previous')).toBeNull()
+  })
+
+  it('shows the max current value while the slider is dragged', async () => {
+    const { getByText, getByRole } = render(Wizard)
+    await fireEvent.click(getByText('wizard.next'))
+
+    const slider = getByRole('slider')
+    slider.value = '20'
+    await fireEvent.input(slider)
+
+    expect(getByText('20 A')).toBeInTheDocument()
+  })
+
+  it('blocks the EVSE step and shows a comms error when the safety module is unreachable', async () => {
+    // Firmware publishes evse_connected as 0 when the WiFi module can't reach
+    // the EVSE controller over serial (gui-nightshift#17).
+    status_store.set({ ipaddress: '10.0.0.5', evse_connected: 0 })
+    const { getByText, queryByRole } = render(Wizard)
+
+    await fireEvent.click(getByText('wizard.next')) // -> EVSE step
+
+    // The error is surfaced and the (untrustworthy) controls are hidden.
+    expect(getByText('connection.evse_missing')).toBeInTheDocument()
+    expect(queryByRole('slider')).toBeNull()
+
+    // Next is disabled, so clicking it can't blindly continue past setup.
+    await fireEvent.click(getByText('wizard.next'))
+    expect(getByText('wizard.evse.title')).toBeInTheDocument()
+  })
+
+  it('allows advancing past the EVSE step when the controller is reachable', async () => {
+    status_store.set({ ipaddress: '10.0.0.5', evse_connected: 1 })
+    const { getByText, getByRole } = render(Wizard)
+
+    await fireEvent.click(getByText('wizard.next')) // -> EVSE step
+    expect(getByRole('slider')).toBeInTheDocument()
+
+    await fireEvent.click(getByText('wizard.next')) // -> WiFi step
+    expect(getByText('wizard.wifi.title')).toBeInTheDocument()
   })
 
   it('saves wizard_passed and stays put when finishing off the device AP', async () => {
@@ -75,5 +119,23 @@ describe('Wizard route', () => {
 
     expect(saveParam).toHaveBeenCalledWith('wizard_passed', true)
     expect(getByText('wizard.reconnect.title')).toBeInTheDocument()
+  })
+
+  it('can join a network entered manually when scanning finds nothing', async () => {
+    const { getByText, getByLabelText } = render(Wizard)
+    await fireEvent.click(getByText('wizard.next'))
+    await fireEvent.click(getByText('wizard.next'))
+    await fireEvent.click(getByText('config.network.manual'))
+    await fireEvent.input(getByLabelText('config.network.ssid'), {
+      target: { value: 'Hidden network' },
+    })
+    await fireEvent.input(getByLabelText('config.network.wifi_password'), {
+      target: { value: 'secret' },
+    })
+    await fireEvent.click(getByText('config.network.connect'))
+
+    await vi.waitFor(() => {
+      expect(upload).toHaveBeenCalledWith({ ssid: 'Hidden network', pass: 'secret' })
+    })
   })
 })
