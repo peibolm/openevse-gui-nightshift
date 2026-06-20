@@ -223,7 +223,7 @@
       "ntp_waiting": "En attente",
       "ntp_connecting": "Connexion",
       "ntp_synchronized": "Synchronisé",
-      "ntp_retry": "Réessayer",
+      "ntp_retry": "Nouvel essai",
       "ntp_dns_ok": "DNS résolu en : ",
       "ntp_dns_failed": "Échec DNS",
       "device_date": "Date"
