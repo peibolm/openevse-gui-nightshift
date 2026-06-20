@@ -8,6 +8,7 @@
   import { showWriteError } from '../../lib/alerts.js'
   import { httpAPI } from '../../lib/api/httpAPI.js'
   import { createTzObj } from '../../lib/utils.js'
+  import { remainingMs as calcRemainingMs, fmtAgo, fmtCountdown } from '../../lib/ntpTime.js'
   import zones from '../../lib/config/zones.json'
   import ConfigPage from '../../lib/components/config/ConfigPage.svelte'
   import ConfigSection from '../../lib/components/config/ConfigSection.svelte'
@@ -84,7 +85,7 @@
   const STATUS_COLOR = {
     disabled:     'text-text-dim',
     waiting:      'text-warning',
-    connecting:   'text-blue-400',
+    connecting:   'text-sleep',
     synchronized: 'text-accent',
     retry:        'text-error',
   }
@@ -92,28 +93,7 @@
   let ntpStatus = $derived(ntpData?.ntp_status ?? null)
 
   // Milliseconds remaining until next event (sync or retry), adjusted for elapsed
-  let remainingMs = $derived(
-    ntpData?.ntp_next_sync_ms != null
-      ? Math.max(0, ntpData.ntp_next_sync_ms - (nowMs - ntpFetchedAt))
-      : null
-  )
-
-  function fmtAgo(unixTs) {
-    if (!unixTs) return null
-    const s = Math.max(0, Math.floor(nowMs / 1000) - unixTs)
-    if (s < 60)   return `${s}s ago`
-    if (s < 3600) return `${Math.floor(s / 60)}m ${s % 60}s ago`
-    return `${Math.floor(s / 3600)}h ${Math.floor((s % 3600) / 60)}m ago`
-  }
-
-  function fmtCountdown(ms) {
-    if (ms == null) return '—'
-    const s = Math.ceil(ms / 1000)
-    if (s <= 0)   return '—'
-    if (s < 60)   return `${s}s`
-    if (s < 3600) return `${Math.floor(s / 60)}m ${s % 60}s`
-    return `${Math.floor(s / 3600)}h ${Math.floor((s % 3600) / 60)}m`
-  }
+  let remainingMs = $derived(calcRemainingMs(ntpData?.ntp_next_sync_ms, nowMs - ntpFetchedAt))
   // ── end NTP status ───────────────────────────────────────────────────────
 
   async function setClockNow() {
@@ -202,31 +182,25 @@
 
       <ReadOnlyRow
         label={$_('config.time.ntp_last_sync')}
-        value={ntpData.ntp_last_sync ? fmtAgo(ntpData.ntp_last_sync) : $_('config.time.ntp_never')}
+        value={ntpData.ntp_last_sync ? fmtAgo(ntpData.ntp_last_sync, nowMs) : $_('config.time.ntp_never')}
       />
 
       {#if ntpStatus === 'synchronized'}
+        <!-- Synchronized: show Next Sync only, hide Next Retry -->
         <ReadOnlyRow
           label={$_('config.time.ntp_next_sync')}
           value={fmtCountdown(remainingMs)}
         />
-        <ReadOnlyRow
-          label={$_('config.time.ntp_next_retry')}
-          value="{$_('config.time.ntp_synchronized')} ✓"
-          tone="ok"
-        />
       {:else if ntpStatus === 'retry'}
-        <ReadOnlyRow label={$_('config.time.ntp_next_sync')} value="—" />
+        <!-- Not synchronized: show Next Retry only, hide Next Sync -->
         <ReadOnlyRow
           label={$_('config.time.ntp_next_retry')}
           value={fmtCountdown(remainingMs)}
           tone="error"
         />
       {:else if ntpStatus === 'connecting'}
-        <ReadOnlyRow label={$_('config.time.ntp_next_sync')} value={$_('config.time.ntp_connecting')} />
-        <ReadOnlyRow label={$_('config.time.ntp_next_retry')} value="—" />
+        <ReadOnlyRow label={$_('config.time.ntp_next_retry')} value={$_('config.time.ntp_connecting')} />
       {:else}
-        <ReadOnlyRow label={$_('config.time.ntp_next_sync')} value="—" />
         <ReadOnlyRow label={$_('config.time.ntp_next_retry')} value="—" />
       {/if}
 
