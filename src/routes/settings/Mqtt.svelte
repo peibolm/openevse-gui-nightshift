@@ -6,6 +6,7 @@
   import { certificate_store } from '../../lib/stores/certificates.js'
   import { createConfigForm } from '../../lib/config/configForm.svelte.js'
   import { httpAPI } from '../../lib/api/httpAPI.js'
+  import { serialQueue } from '../../lib/queue.js'
   import { formatDuration, formatAgo } from '../../lib/format/duration.js'
   import ConfigPage from '../../lib/components/config/ConfigPage.svelte'
   import ConfigSection from '../../lib/components/config/ConfigSection.svelte'
@@ -38,13 +39,13 @@
   let mqttData = $state(null)
 
   async function refreshMqttStatus() {
-    const res = await httpAPI('GET', '/mqtt')
+    // The device web server is single-threaded — route through serialQueue so
+    // this poll can't collide with concurrent store downloads (see queue.js).
+    const res = await serialQueue.add(() => httpAPI('GET', '/mqtt'))
     // Only accept responses that include mqtt_connected — guards against old
     // firmware returning a generic 404 JSON that would corrupt mqttData.
     if (res && res !== 'error' && 'mqtt_connected' in res) {
       mqttData = res
-      // Also push into the status_store so other parts of the app stay in sync
-      status_store.update((cur) => ({ ...(cur ?? {}), ...res }))
     }
   }
 
@@ -140,7 +141,7 @@
     // Optimistically show "Connecting" while the reset is in-flight
     mqttData = { ...(mqttData ?? {}), mqtt_connected: 0, mqtt_status: 'connecting' }
     try {
-      await httpAPI('POST', '/mqtt', '{}')
+      await serialQueue.add(() => httpAPI('POST', '/mqtt', '{}'))
       // Poll every second for up to 15 s to pick up the reconnected state.
       // The reconnect path includes: MG_EV_CLOSE → loop → TCP connect → CONNACK,
       // which can take several seconds if DNS is not in LwIP's cache.
