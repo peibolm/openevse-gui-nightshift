@@ -396,9 +396,9 @@
     "security": {
       "firmware_security": "Sécurité du firmware",
       "boot_lock": "Verrou de démarrage",
-      "boot_lock_desc": "Verrouille la borne de recharge jusqu’au démarrage complet du module WiFi.",
+      "boot_lock_desc": "Verrouille la borne jusqu’au démarrage complet du WiFi",
       "heartbeat": "Supervision du signal de vie",
-      "heartbeat_desc": "Signal de vie entre le WiFi et le module de sécurité ; s’il n’est pas acquitté dans l’intervalle, bascule sur le courant de repli du signal de vie.",
+      "heartbeat_desc": "Une perte de communication déclenche le courant de repli",
       "heartbeat_interval": "Intervalle du signal de vie (s)",
       "heartbeat_current": "Courant de repli du signal de vie",
       "heartbeat_tooltip": "Signal de vie toutes les {interval}s, retombe à {current} A.",

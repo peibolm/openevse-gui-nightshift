@@ -17,7 +17,8 @@
     heartbeatActive    = false,   // red heart when heartbeat supervision is on
     heartbeatInterval  = 5,       // seconds (for the heart hover tooltip)
     heartbeatCurrent   = 6,       // A (fail current, for the hover tooltip)
-    bootLock           = false,   // lock icon shown only when boot lock is on
+    bootLockSupported  = false,   // show the lock/unlock icon at all
+    bootLock           = false,   // locked padlock when on, open padlock when off
     onCurrentChange = () => {},   // (amps: number) => void
     onEdit          = () => {},   // open the settings page
   } = $props()
@@ -55,9 +56,13 @@
           {/if}
         </div>
       {/if}
-      {#if bootLock}
-        <span role="img" aria-label={$_('config.security.boot_lock')} class="text-text-dim">
-          <Icon icon="mdi:lock" size={18} />
+      {#if bootLockSupported}
+        <span
+          role="img"
+          aria-label={$_('config.security.boot_lock')}
+          class={bootLock ? 'text-text' : 'text-text-dim'}
+        >
+          <Icon icon={bootLock ? 'mdi:lock' : 'mdi:lock-open-variant'} size={18} />
         </span>
       {/if}
       <IconButton

@@ -396,9 +396,9 @@
     "security": {
       "firmware_security": "Firmware security",
       "boot_lock": "Boot lock",
-      "boot_lock_desc": "Lock Charging Station until WiFi module fully boots.",
+      "boot_lock_desc": "Lock Charging Station until WiFi fully boots",
       "heartbeat": "Heartbeat supervision",
-      "heartbeat_desc": "Heartbeat between WiFi and safety module, if heartbeat not acknowledged by the interval then fail to the Heartbeat Fail Current.",
+      "heartbeat_desc": "Communication loss triggers failsafe current",
       "heartbeat_interval": "Heartbeat interval (s)",
       "heartbeat_current": "Heartbeat Fail Current",
       "heartbeat_tooltip": "Heartbeat every {interval}s, fails to {current} A.",

@@ -384,6 +384,7 @@
     heartbeatActive={heartbeatEnabled}
     {heartbeatInterval}
     {heartbeatCurrent}
+    {bootLockSupported}
     {bootLock}
     onCurrentChange={saveDefaultCurrent}
     onEdit={() => (settingsOpen = true)}

@@ -396,9 +396,9 @@
     "security": {
       "firmware_security": "Firmware biztonság",
       "boot_lock": "Indítási zár",
-      "boot_lock_desc": "Lezárja a töltőállomást, amíg a WiFi modul teljesen el nem indul.",
+      "boot_lock_desc": "Lezárja a töltőállomást, amíg a WiFi teljesen el nem indul",
       "heartbeat": "Életjel felügyelet",
-      "heartbeat_desc": "Életjel a WiFi és a biztonsági modul között; ha az intervallumon belül nincs nyugtázva, a töltő az életjel-hibaáramra vált.",
+      "heartbeat_desc": "A kommunikáció megszakadása életjel-hibaáramot vált ki",
       "heartbeat_interval": "Életjel intervallum (s)",
       "heartbeat_current": "Életjel-hibaáram",
       "heartbeat_tooltip": "Életjel {interval} másodpercenként, {current} A-re esik vissza.",
