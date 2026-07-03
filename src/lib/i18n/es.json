@@ -597,6 +597,8 @@
     "rule_cancel": "Cancel",
     "rule_delete": "Delete rule",
     "rule_error_no_day": "Select at least one day",
+    "rule_error_same_time": "La hora de inicio y la de fin deben ser distintas",
+    "rule_error_no_limit": "Primero establece un valor de límite",
     "rule_error_stop_before_start": "Stop time must be after start time",
     "window_from": "from {start}",
     "window_range": "{start} – {stop}",

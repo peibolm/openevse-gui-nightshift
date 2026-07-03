@@ -41,7 +41,9 @@
   let limitType   = $state('none')
   let limitValue  = $state(0)
   let chargeCurrent = $state(16)
-  let showDayError  = $state(false)
+  let showDayError   = $state(false)
+  let showTimeError  = $state(false)
+  let showLimitError = $state(false)
 
   $effect(() => {
     if (open) {
@@ -54,7 +56,9 @@
       limitType     = rule?.limit?.type ?? 'none'
       limitValue    = rule?.limit?.value ?? 0
       chargeCurrent = rule?.chargeCurrent ?? 16
-      showDayError  = false
+      showDayError   = false
+      showTimeError  = false
+      showLimitError = false
     }
   })
 
@@ -70,6 +74,10 @@
 
   function validate() {
     if (!alwaysOn && !flags.some((f) => f)) { showDayError = true; return false }
+    // Equal start/stop would silently become a 24h window (isNextDay uses <=).
+    if (!alwaysOn && hasStopTime && stopTime === startTime) { showTimeError = true; return false }
+    // An always-on session limit with no limit set writes nothing to the device.
+    if (isLimitFeature && (limitType === 'none' || !(limitValue > 0))) { showLimitError = true; return false }
     return true
   }
 
@@ -130,6 +138,7 @@
       <input
         type="time"
         bind:value={startTime}
+        oninput={() => (showTimeError = false)}
         class={SELECT_CLASS}
       />
     </label>
@@ -155,9 +164,13 @@
         <input
           type="time"
           bind:value={stopTime}
+          oninput={() => (showTimeError = false)}
           class={SELECT_CLASS}
         />
       </label>
+      {#if showTimeError}
+        <p class="mt-2 text-xs text-error">{$_('charge_manager.rule_error_same_time')}</p>
+      {/if}
     {/if}
   </div>
 
@@ -245,7 +258,7 @@
       </span>
       <select
         bind:value={limitType}
-        onchange={() => { if (limitType === 'none') limitValue = 0 }}
+        onchange={() => { if (limitType === 'none') limitValue = 0; showLimitError = false }}
         class={SELECT_CLASS}
       >
         <option value="none">{$_('charge_manager.rule_limit_none')}</option>
@@ -266,9 +279,12 @@
             value={limitValue}
             progress={0}
             charging={false}
-            onchange={(v) => (limitValue = v)}
+            onchange={(v) => { limitValue = v; showLimitError = false }}
           />
         </div>
+      {/if}
+      {#if showLimitError}
+        <p class="mt-2 text-xs text-error">{$_('charge_manager.rule_error_no_limit')}</p>
       {/if}
     </div>
   {/if}

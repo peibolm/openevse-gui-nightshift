@@ -597,6 +597,8 @@
     "rule_cancel": "Cancel",
     "rule_delete": "Delete rule",
     "rule_error_no_day": "Select at least one day",
+    "rule_error_same_time": "A kezdési és a befejezési időpont nem lehet azonos",
+    "rule_error_no_limit": "Először állítson be egy korlátértéket",
     "rule_error_stop_before_start": "Stop time must be after start time",
     "window_from": "from {start}",
     "window_range": "{start} – {stop}",
