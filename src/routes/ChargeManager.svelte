@@ -301,11 +301,14 @@
           }
         }
         if (toDelete.size) {
+          let ok = true
           for (const id of toDelete) {
-            const ok = await serialQueue.add(() => schedule_store.remove(id))
-            if (!ok) { showWriteError(); return }
+            ok = await serialQueue.add(() => schedule_store.remove(id))
+            if (!ok) break
           }
+          // Refresh even after a failure — earlier deletes may have landed.
           await serialQueue.add(() => schedule_store.download())
+          if (!ok) { showWriteError(); return }
         }
         // Action changed on global card → clear old config
         if (wasGlobal && rule._prevAction && rule._prevAction !== rule.action) {
@@ -332,15 +335,18 @@
         // Write to /schedule
         const timers = Array.isArray($schedule_store) ? $schedule_store : []
         const { add, remove } = rulesToTimers(rule, timers)
+        let ok = true
         for (const id of remove) {
-          const ok = await serialQueue.add(() => schedule_store.remove(id))
-          if (!ok) { showWriteError(); return }
+          ok = await serialQueue.add(() => schedule_store.remove(id))
+          if (!ok) break
         }
-        for (const timer of add) {
-          const ok = await serialQueue.add(() => schedule_store.upload(timer))
-          if (!ok) { showWriteError(); return }
+        if (ok) for (const timer of add) {
+          ok = await serialQueue.add(() => schedule_store.upload(timer))
+          if (!ok) break
         }
+        // Refresh even after a failure so the UI reflects partial writes.
         await serialQueue.add(() => schedule_store.download())
+        if (!ok) showWriteError()
       }
     } finally {
       busy = false
@@ -353,11 +359,14 @@
     busy = true
     removingId = rule.id
     try {
+      let ok = true
       for (const id of ruleDeleteIds(rule)) {
-        const ok = await serialQueue.add(() => schedule_store.remove(id))
-        if (!ok) { showWriteError(); return }
+        ok = await serialQueue.add(() => schedule_store.remove(id))
+        if (!ok) break
       }
+      // Refresh even after a failure — the start event may already be gone.
       await serialQueue.add(() => schedule_store.download())
+      if (!ok) showWriteError()
     } finally {
       busy = false
       removingId = null
