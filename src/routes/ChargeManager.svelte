@@ -264,8 +264,16 @@
   }
 
   // ── Temperature protection (combined throttle/panic slider) ───────────────
-  const saveTempThrottle = (degC) => saveConfigParam('temp_throttle_setpoint', degC)
-  const saveTempPanic    = (degC) => saveConfigParam('over_temp_shutdown', degC)
+  // Not busy-guarded: dragging one thumb into the other commits BOTH values in
+  // one synchronous burst (TempProtectionCard pushes the crossed thumb along),
+  // and the guard would silently drop the second save. serialQueue already
+  // serializes the writes, matching how Safety.svelte drives the same card.
+  async function saveTempParam(name, degC) {
+    const ok = await serialQueue.add(() => config_store.saveParam(name, degC))
+    if (!ok) showWriteError()
+  }
+  const saveTempThrottle = (degC) => saveTempParam('temp_throttle_setpoint', degC)
+  const saveTempPanic    = (degC) => saveTempParam('over_temp_shutdown', degC)
 
   // ── Remove global feature (trash icon on GlobalFeatureCard) ───────────────
   async function removeGlobalFeature(key) {
