@@ -10,6 +10,7 @@
     temp = 0, tempUnit = 'units.celsius',
     costText = null,
     userText = null,
+    reasonText = null,
   } = $props()
 
   const toneClass = {
@@ -24,7 +25,12 @@
 <Card class="flex items-center gap-3 p-3">
   <Icon icon={stateIcon} size={24} class={toneClass[stateTone]} />
   <div class="min-w-0 flex-1">
-    <div class="truncate text-sm font-semibold text-text">{stateDesc}</div>
+    <div class="truncate text-sm font-semibold text-text">
+      {stateDesc}
+      {#if reasonText}
+        <span class="ml-1 font-normal text-text-dim">({reasonText})</span>
+      {/if}
+    </div>
     <div class="mt-0.5 flex flex-wrap items-center gap-x-1.5 text-xs text-text-dim">
       <Icon icon={typeIcon} size={13} class={toneClass[typeTone]} />
       <span>{typeLabel}</span>

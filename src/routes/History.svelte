@@ -54,6 +54,7 @@
         temp: t.value,
         tempUnit: t.unitKey,
         userText: userTextFor(e),
+        reasonText: e.rsn,
       }
     }),
   )
