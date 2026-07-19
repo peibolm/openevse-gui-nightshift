@@ -777,6 +777,20 @@
       "information": "Információ",
       "notification": "Értesítés",
       "warning": "Figyelmeztetés"
+    },
+    "reasons": {
+      "manual": "Kézi",
+      "schedule": "Ütemezés",
+      "shaper": "Áramkorlátozás",
+      "limit": "Energia-/időkorlát",
+      "divert": "Napelemes szabályozás",
+      "rfid": "RFID",
+      "mqtt": "MQTT",
+      "ocpp": "OCPP",
+      "temp_throttle": "Túlmelegedés",
+      "boost": "Boost",
+      "ohm": "OhmConnect",
+      "error": "Hiba"
     }
   },
   "wizard": {

@@ -777,6 +777,20 @@
       "information": "Information",
       "notification": "Notification",
       "warning": "Avertissement"
+    },
+    "reasons": {
+      "manual": "Manuel",
+      "schedule": "Programmation",
+      "shaper": "Limitation de courant",
+      "limit": "Limite d'énergie/temps",
+      "divert": "Délestage solaire",
+      "rfid": "RFID",
+      "mqtt": "MQTT",
+      "ocpp": "OCPP",
+      "temp_throttle": "Surchauffe",
+      "boost": "Boost",
+      "ohm": "OhmConnect",
+      "error": "Erreur"
     }
   },
   "wizard": {

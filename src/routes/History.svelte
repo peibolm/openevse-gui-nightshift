@@ -54,7 +54,7 @@
         temp: t.value,
         tempUnit: t.unitKey,
         userText: userTextFor(e),
-        reasonText: e.rsn,
+        reasonText: e.rsn ? $_('history.reasons.' + e.rsn, { default: e.rsn }) : null,
       }
     }),
   )

@@ -12,4 +12,14 @@ describe('history i18n keys', () => {
     expect(en.history.types.notification).toBeTypeOf('string')
     expect(en.history.types.warning).toBeTypeOf('string')
   })
+
+  it('has a translation for every stop/pause reason code the firmware can send', () => {
+    const codes = [
+      'manual', 'schedule', 'shaper', 'limit', 'divert',
+      'rfid', 'mqtt', 'ocpp', 'temp_throttle', 'boost', 'ohm', 'error',
+    ]
+    for (const code of codes) {
+      expect(en.history.reasons[code]).toBeTypeOf('string')
+    }
+  })
 })
